@@ -12,6 +12,10 @@ public class Transaction {
     String comment;
     String category;
 
+    public Transaction() {
+
+    }
+
     public Transaction(int id, double value, Date date, String comment, String category) {
         this.id = id;
         this.value = value;
@@ -19,6 +23,8 @@ public class Transaction {
         this.comment = comment;
         this.category = category;
     }
+
+
 
     public int getId() {
         return id;

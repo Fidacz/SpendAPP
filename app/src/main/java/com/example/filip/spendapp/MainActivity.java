@@ -94,11 +94,16 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 break;
 
             case R.id.save:
+
                 id++;
-                double value = Double.parseDouble(String.valueOf(valueEditText.getText()));
-                String textKOmentare = String.valueOf(commentEditText.getText());
-                Date date = new Date();
-                Transaction transakce = new Transaction(id, value, date, textKOmentare,null);
+                String stringValue = String.valueOf(valueEditText.getText());
+                if (stringValue != null) {
+                    Double value = Double.parseDouble(stringValue);
+                    String textKOmentare = String.valueOf(commentEditText.getText());
+                    Date date = new Date();
+                    Transaction transakce = new Transaction(id, value, date, textKOmentare,null);
+                }
+
 
 
                 break;
