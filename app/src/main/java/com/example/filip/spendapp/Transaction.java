@@ -5,18 +5,18 @@ import java.util.Date;
 /**
  * Created by Filip on 31. 5. 2015.
  */
-public class Payment {
+public class Transaction {
     int id;
     double value;
     Date date;
-    String note;
+    String comment;
     String category;
 
-    public Payment(int id, double value, Date date, String note, String category) {
+    public Transaction(int id, double value, Date date, String comment, String category) {
         this.id = id;
         this.value = value;
         this.date = date;
-        this.note = note;
+        this.comment = comment;
         this.category = category;
     }
 
@@ -45,11 +45,11 @@ public class Payment {
     }
 
     public String getNote() {
-        return note;
+        return comment;
     }
 
-    public void setNote(String note) {
-        this.note = note;
+    public void setNote(String comment) {
+        this.comment = comment;
     }
 
     public String getCategory() {

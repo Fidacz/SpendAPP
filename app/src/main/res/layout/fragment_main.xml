@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Příjem / Výdaj"
-                android:id="@+id/titleSpendSwitch"
+                android:id="@+id/titleValueSwitch"
                 android:layout_column="1" />
 
         </TableRow>
