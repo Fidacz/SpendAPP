@@ -33,6 +33,7 @@ public class TransactionXMLParser {
         Date date = null;
         String comment = null;
         String category = null;
+        int type = 0;
 
         try {
             event = myParser.getEventType();
@@ -57,10 +58,12 @@ public class TransactionXMLParser {
                             //TODO date parser
                         }else if(name.equals("Coment")){
                             comment = text;
-                        }else if (name.equals("Category")){
+                        }else if (name.equals("Category")) {
                             category = text;
+                        }else if (name.equals("type")){
+                            type = Integer.parseInt(text);
                         }else if(name.equals("Transaction")){
-                            transactionList.add(new Transaction(id,value,date,comment, category));
+                            transactionList.add(new Transaction(id,value,date,comment, category, type));
                         }
                         break;
 

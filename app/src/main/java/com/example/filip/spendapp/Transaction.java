@@ -11,17 +11,20 @@ public class Transaction {
     Date date;
     String comment;
     String category;
+    int type; //type 0 is income, 1 is cost
 
     public Transaction() {
 
     }
 
-    public Transaction(int id, double value, Date date, String comment, String category) {
+    public Transaction(int id, double value, Date date, String comment, String category, int type) {
         this.id = id;
         this.value = value;
         this.date = date;
         this.comment = comment;
         this.category = category;
+        this.type = type;
+
     }
 
 
@@ -50,11 +53,11 @@ public class Transaction {
         this.date = date;
     }
 
-    public String getNote() {
+    public String getComment() {
         return comment;
     }
 
-    public void setNote(String comment) {
+    public void setComent(String comment) {
         this.comment = comment;
     }
 
@@ -64,5 +67,13 @@ public class Transaction {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }
