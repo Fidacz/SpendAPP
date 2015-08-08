@@ -45,8 +45,10 @@ public class Transaction {
         this.value = value;
     }
 
-    public Date getDate() {
-        return date;
+    public String getDate() {
+
+        String datum = String.valueOf(date.getHours() + ":" +String.valueOf(date.getMinutes()) + " " + String.valueOf(date.getDay() + "." + String.valueOf(date.getMonth()) + "." + String.valueOf(date.getYear())));
+        return datum;
     }
 
     public void setDate(Date date) {

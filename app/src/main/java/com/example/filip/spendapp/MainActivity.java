@@ -112,13 +112,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
                     // docastne resene ukladani xml
                     File file = new File(Environment.getExternalStorageDirectory() + File.separator + "test.xml");
-                    TransactionXMLParser transactionXMLParser = new TransactionXMLParser();
+
                     try {
                         file.createNewFile();
                         FileOutputStream fileos = new FileOutputStream(file);
                         OutputStreamWriter osw = new OutputStreamWriter(fileos);
                         // Write the string to the file
-                        osw.write(transactionXMLParser.addTrasaction(transakce));
+                        osw.write(TransactionXMLParser.addTrasaction(transakce));
                         // save and close
                         osw.flush();
                         osw.close();

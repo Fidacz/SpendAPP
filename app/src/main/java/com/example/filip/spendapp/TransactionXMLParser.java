@@ -85,8 +85,8 @@ public class TransactionXMLParser {
     return transactionList;
     }
 
-    public String addTrasaction (Transaction transaction){
-
+    public static String addTrasaction (Transaction transaction){
+        // vytvareni xml
 
         XmlSerializer xmlSerializer = Xml.newSerializer();
         StringWriter writer = new StringWriter();
