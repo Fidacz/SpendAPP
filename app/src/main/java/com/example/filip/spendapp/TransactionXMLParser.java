@@ -85,7 +85,7 @@ public class TransactionXMLParser {
     return transactionList;
     }
 
-    public void addTrasaction (Transaction transaction){
+    public String addTrasaction (Transaction transaction){
 
 
         XmlSerializer xmlSerializer = Xml.newSerializer();
@@ -103,17 +103,20 @@ public class TransactionXMLParser {
 
                 xmlSerializer.startTag("", "Value");
                     xmlSerializer.text(Double.toString(transaction.getValue()));
-                xmlSerializer.endTag("","Value");
+                xmlSerializer.endTag("", "Value");
 
 
-            xmlSerializer.endTag("","Transaction");
+            xmlSerializer.endTag("", "Transaction");
+            xmlSerializer.endDocument();
+
+            return writer.toString();
 
 
         } catch (IOException e) {
             e.printStackTrace();
         }
         // start DOCUMENT
-
+        return null;
 
 
 

@@ -1,5 +1,6 @@
 package com.example.filip.spendapp;
 
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,6 +12,10 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Date;
 
 
@@ -101,8 +106,29 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     Double value = Double.parseDouble(stringValue);
                     String textKOmentare = String.valueOf(commentEditText.getText());
                     Date date = new Date();
-                    Transaction transakce = new Transaction(id, value, date, textKOmentare,null);
+                    Transaction transakce = new Transaction(id, value, date, textKOmentare,null,0);
+
+
+
+                    // docastne resene ukladani xml
+                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + "test.xml");
+                    TransactionXMLParser transactionXMLParser = new TransactionXMLParser();
+                    try {
+                        file.createNewFile();
+                        FileOutputStream fileos = new FileOutputStream(file);
+                        OutputStreamWriter osw = new OutputStreamWriter(fileos);
+                        // Write the string to the file
+                        osw.write(transactionXMLParser.addTrasaction(transakce));
+                        // save and close
+                        osw.flush();
+                        osw.close();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                 }
+
 
 
 
