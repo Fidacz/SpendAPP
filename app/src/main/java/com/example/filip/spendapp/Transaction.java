@@ -6,12 +6,12 @@ import java.util.Date;
  * Created by Filip on 31. 5. 2015.
  */
 public class Transaction {
-    int id;
-    double value;
-    Date date;
-    String comment;
-    String category;
-    int type; //type 0 is income, 1 is cost
+    private int id;
+    private double value;
+    private Date date;
+    private String comment;
+    private String category;
+    private int type; //type 0 is income, 1 is cost
 
     public Transaction() {
 

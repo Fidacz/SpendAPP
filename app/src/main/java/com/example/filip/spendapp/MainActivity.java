@@ -40,7 +40,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Button date;
     private Button save;
 
-    int id;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
