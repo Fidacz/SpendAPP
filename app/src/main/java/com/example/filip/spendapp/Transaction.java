@@ -26,6 +26,15 @@ public class Transaction {
         this.type = type;
 
     }
+    public Transaction(int id, double value, String date, String comment, String category, int type) {
+        this.id = id;
+        this.value = value;
+        this.date = dateParser(date);
+        this.comment = comment;
+        this.category = category;
+        this.type = type;
+
+    }
 
 
 
@@ -46,13 +55,16 @@ public class Transaction {
     }
 
     public String getDate() {
-
+        // prevedeni Date na string ve formatu hh:mm DD.MM.YYYY
         String datum = String.valueOf(date.getHours() + ":" +String.valueOf(date.getMinutes()) + " " + String.valueOf(date.getDay() + "." + String.valueOf(date.getMonth()) + "." + String.valueOf(date.getYear())));
         return datum;
     }
 
     public void setDate(Date date) {
         this.date = date;
+    }
+    public void setDate(String date) {
+        this.date = dateParser(date);
     }
 
     public String getComment() {
@@ -77,5 +89,19 @@ public class Transaction {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    private Date dateParser (String date){
+        // prevedeni stringu na date
+        this.date.setHours(Integer.valueOf(date.substring(0,1)));
+        this.date.setMinutes(Integer.valueOf(date.substring(3, 4)));
+        this.date.setDate(Integer.valueOf(date.substring(6, 7)));
+        this.date.setMonth(Integer.valueOf(date.substring(9, 10)));
+        this.date.setYear(Integer.valueOf(date.substring(12, 15)));
+
+
+
+
+        return null;
     }
 }

@@ -118,7 +118,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         FileOutputStream fileos = new FileOutputStream(file);
                         OutputStreamWriter osw = new OutputStreamWriter(fileos);
                         // Write the string to the file
-                        osw.write(TransactionXMLParser.addTrasaction(transakce));
+                        //osw.write(TransactionXMLParser.addTrasaction(transakce));
                         // save and close
                         osw.flush();
                         osw.close();

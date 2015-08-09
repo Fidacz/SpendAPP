@@ -9,28 +9,28 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by Filip on 14. 6. 2015.
  */
 public class TransactionXMLParser {
 
-    private ArrayList<Transaction> transactionList = new ArrayList<>();
+
 
     public TransactionXMLParser() {
     }
 
-    private void creatXMLFile (){
 
-    }
 
-    public ArrayList<Transaction> parser (XmlPullParser myParser){
+    public static ArrayList<Transaction> parser (XmlPullParser myParser){
         int event;
         String text=null;
 
+        ArrayList<Transaction> transactionList = new ArrayList<>();
         int id = 0;
         double value = 0;
-        Date date = null;
+        String date = null;
         String comment = null;
         String category = null;
         int type = 0;
@@ -55,7 +55,7 @@ public class TransactionXMLParser {
                         }else if(name.equals("Value")) {
                             value = Double.parseDouble(text);
                         }else if(name.equals("Date")){
-                            //TODO date parser
+                            date = text;
                         }else if(name.equals("Coment")){
                             comment = text;
                         }else if (name.equals("Category")) {
@@ -85,7 +85,7 @@ public class TransactionXMLParser {
     return transactionList;
     }
 
-    public static String addTrasaction (Transaction transaction){
+    public static String creteXML (ArrayList<Transaction> transactions){
         // vytvareni xml
 
         XmlSerializer xmlSerializer = Xml.newSerializer();
@@ -97,14 +97,35 @@ public class TransactionXMLParser {
             xmlSerializer.startDocument("UTF-8", true);
 
             xmlSerializer.startTag("", "Transaction");
+
+            for (int i = 0 ; transactions.size() != i; i++ ) {
+                Transaction transaction = transactions.get(i);
+
                 xmlSerializer.startTag("", "id");
-                    xmlSerializer.text(Integer.toString(transaction.getId()));
+                xmlSerializer.text(Integer.toString(transaction.getId()));
                 xmlSerializer.endTag("", "id");
 
                 xmlSerializer.startTag("", "Value");
-                    xmlSerializer.text(Double.toString(transaction.getValue()));
+                xmlSerializer.text(Double.toString(transaction.getValue()));
                 xmlSerializer.endTag("", "Value");
 
+                xmlSerializer.startTag("", "Date");
+                xmlSerializer.text(transaction.getDate());
+                xmlSerializer.endTag("", "Date");
+
+                xmlSerializer.startTag("", "Category");
+                xmlSerializer.text(transaction.getCategory());
+                xmlSerializer.endTag("", "Category");
+
+                xmlSerializer.startTag("", "Coment");
+                xmlSerializer.text(transaction.getComment());
+                xmlSerializer.endTag("", "Coment");
+
+                xmlSerializer.startTag("", "Type");
+                xmlSerializer.text(String.valueOf(transaction.getType()));
+                xmlSerializer.endTag("", "Type");
+
+            }
 
             xmlSerializer.endTag("", "Transaction");
             xmlSerializer.endDocument();
