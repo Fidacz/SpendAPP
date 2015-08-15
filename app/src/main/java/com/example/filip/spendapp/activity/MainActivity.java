@@ -14,7 +14,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.filip.spendapp.R;
-import com.example.filip.spendapp.Transaction;
+import com.example.filip.spendapp.data.Transaction;
 import com.example.filip.spendapp.TransactionXMLParser;
 
 import java.io.File;

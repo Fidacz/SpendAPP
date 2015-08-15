@@ -5,7 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import java.util.AbstractList;
+import com.example.filip.spendapp.data.Transaction;
+
 import java.util.ArrayList;
 
 /**

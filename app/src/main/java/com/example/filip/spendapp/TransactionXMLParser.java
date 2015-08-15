@@ -2,14 +2,14 @@ package com.example.filip.spendapp;
 
 import android.util.Xml;
 
+import com.example.filip.spendapp.data.Transaction;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlSerializer;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Objects;
 
 /**
  * Created by Filip on 14. 6. 2015.

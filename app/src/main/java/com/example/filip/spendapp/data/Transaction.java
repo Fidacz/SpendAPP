@@ -1,4 +1,4 @@
-package com.example.filip.spendapp;
+package com.example.filip.spendapp.data;
 
 import java.util.Date;
 
