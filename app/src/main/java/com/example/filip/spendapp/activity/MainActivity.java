@@ -1,5 +1,6 @@
-package com.example.filip.spendapp;
+package com.example.filip.spendapp.activity;
 
+import android.content.Intent;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -12,10 +13,15 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.example.filip.spendapp.R;
+import com.example.filip.spendapp.Transaction;
+import com.example.filip.spendapp.TransactionXMLParser;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -41,6 +47,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Button save;
 
     private int id;
+    private ArrayList<Transaction> transactionList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,8 +92,26 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+
+        //docastne reseni prepinani mezi aktivitama
+        //TODO docelat prepinani mezi aktivitama
+        if (id == R.id.action_spend) {
+
+        }else if (id == R.id.action_trasaction){
+
+            Intent intent = new Intent(this,TransactionActivity.class);
+            this.startActivity(intent);
             return true;
+        }else if (id == R.id.action_category){
+            Intent intent = new Intent(this,CategoryActivity.class);
+            this.startActivity(intent);
+            return true;
+
+        }else if (id == R.id.action_settings){
+            Intent intent = new Intent(this,SettingsActivity.class);
+            this.startActivity(intent);
+            return true;
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -102,23 +128,25 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
                 id++;
                 String stringValue = String.valueOf(valueEditText.getText());
+                //TODO nacteni kategorie
+
                 if (stringValue != null) {
                     Double value = Double.parseDouble(stringValue);
                     String textKOmentare = String.valueOf(commentEditText.getText());
                     Date date = new Date();
-                    Transaction transakce = new Transaction(id, value, date, textKOmentare,null,0);
-
+                    Transaction transakce = new Transaction(id, value, date, textKOmentare,"testkategorie",0);
+                    transactionList.add(transakce);
 
 
                     // docastne resene ukladani xml
-                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + "test.xml");
+                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + "spendapp.xml");
 
                     try {
                         file.createNewFile();
                         FileOutputStream fileos = new FileOutputStream(file);
                         OutputStreamWriter osw = new OutputStreamWriter(fileos);
                         // Write the string to the file
-                        //osw.write(TransactionXMLParser.addTrasaction(transakce));
+                        osw.write(TransactionXMLParser.creteXML(transactionList));
                         // save and close
                         osw.flush();
                         osw.close();
@@ -128,8 +156,6 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     }
 
                 }
-
-
 
 
                 break;
