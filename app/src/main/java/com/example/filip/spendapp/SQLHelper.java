@@ -1,10 +1,12 @@
 package com.example.filip.spendapp;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.filip.spendapp.data.Category;
 import com.example.filip.spendapp.data.Transaction;
 
 import java.util.ArrayList;
@@ -21,7 +23,17 @@ public class SQLHelper extends SQLiteOpenHelper{
 
     protected static final String DATABASE_NAME = "spendApp";
     protected static final int DATABASE_VERSION = 1;
-    protected static final String TB_NAME = "Transaction";
+
+    protected static final String TB_TRANSACTION = "TransactionTab";
+    protected static final String ID = "ID";
+    protected static final String VALUE = "Value";
+    protected static final String DATE = "Date";
+    protected static final String COMENT = "Coment";
+    protected static final String CATEGORY = "Category";
+    protected static final String TYPE = "Type";
+
+
+
 
 
     public SQLHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -31,12 +43,9 @@ public class SQLHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Vytvoreni tabulky
-        db.execSQL("CREATE TABLE" + TB_NAME + "( ID INTEGER PRIMARY KEY" +
-                "Value DOUBLE NOT NULL" +
-                "Date TEXT NOT NULL" +
-                "Coment TEXT" +
-                "Category TEXT NOT NULL" +
-                "Type INTEGER NOT NULL);");
+
+        db.execSQL("CREATE TABLE " + TB_TRANSACTION + "(ID INTEGER PRIMARY KEY, Value REAL NOT NULL, Date TEXT NOT NULL, Coment TEXT, Category TEXT NOT NULL, Type INTEGER NOT NULL)");
+
 
     }
 
@@ -47,22 +56,25 @@ public class SQLHelper extends SQLiteOpenHelper{
 
 
     public void addTransaction (Transaction transaction){
+        //ulozeni transakce do DB
         SQLiteDatabase db = this.getWritableDatabase();
 
-        db.execSQL("INSERT INTO" + TB_NAME + "(ID, Value, Date, Coment, Category, Type)" +
-                "VALUES (" + transaction.getId() +
-                            transaction.getValue() +
-                            transaction.getDate() +
-                            transaction.getComment() +
-                            transaction.getCategory() +
-                            transaction.getType() + ")");
+        ContentValues values = new ContentValues();
+        values.put(ID,transaction.getId());
+        values.put(VALUE,transaction.getValue());
+        values.put(DATE,transaction.getDate());
+        values.put(CATEGORY,transaction.getCategory());
+        values.put(COMENT,transaction.getComment());
+        values.put(TYPE,transaction.getType());
+
+        db.insert(TB_TRANSACTION, null, values);
         db.close();
     }
 
     public void delteTransaction(int ID){
         SQLiteDatabase db = this.getWritableDatabase();
 
-        db.execSQL("DELETE FROM" + TB_NAME +
+        db.execSQL("DELETE FROM" + TB_TRANSACTION +
         "WHERE ID=" + ID);
 
         db.close();
@@ -75,7 +87,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         Transaction transaction = new Transaction();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM" + TB_NAME + "WHERE ID=" + ID, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM" + TB_TRANSACTION + "WHERE ID=" + ID, null);
 
         transaction.setId(Integer.valueOf(cursor.getString(0)));
         transaction.setValue(Double.valueOf(cursor.getString(1)));
@@ -95,7 +107,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<Transaction> transactions = new ArrayList<>();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM" + TB_NAME , null);
+        Cursor cursor = db.rawQuery("SELECT * FROM" + TB_TRANSACTION, null);
 
         if (cursor.moveToFirst()) {
             do {

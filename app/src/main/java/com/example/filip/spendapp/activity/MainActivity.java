@@ -14,6 +14,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.filip.spendapp.R;
+import com.example.filip.spendapp.SQLHelper;
 import com.example.filip.spendapp.data.Transaction;
 import com.example.filip.spendapp.TransactionXMLParser;
 
@@ -137,6 +138,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     Transaction transakce = new Transaction(id, value, date, textKOmentare,"testkategorie",0);
                     transactionList.add(transakce);
 
+
+
+                    SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
+                    db.addTransaction(transakce);
 
                     // docastne resene ukladani xml
                     File file = new File(Environment.getExternalStorageDirectory() + File.separator + "spendapp.xml");

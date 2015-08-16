@@ -56,6 +56,7 @@ public class Transaction {
 
     public String getDate() {
         // prevedeni Date na string ve formatu hh:mm DD.MM.YYYY
+        //TODO opravit
         String datum = String.valueOf(date.getHours() + ":" +String.valueOf(date.getMinutes()) + " " + String.valueOf(date.getDay() + "." + String.valueOf(date.getMonth()) + "." + String.valueOf(date.getYear())));
         return datum;
     }
@@ -93,6 +94,7 @@ public class Transaction {
 
     private Date dateParser (String date){
         // prevedeni stringu na date
+
         this.date.setHours(Integer.valueOf(date.substring(0,1)));
         this.date.setMinutes(Integer.valueOf(date.substring(3, 4)));
         this.date.setDate(Integer.valueOf(date.substring(6, 7)));
