@@ -1,49 +1,34 @@
 package com.example.filip.spendapp.activity;
 
-import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.EditText;
 
 import com.example.filip.spendapp.R;
 import com.example.filip.spendapp.SQLHelper;
 import com.example.filip.spendapp.data.Category;
 
-import java.util.ArrayList;
+/**
+ * Created by Filip on 18. 11. 2015.
+ */
+public class AddCategoryActivity extends AppCompatActivity implements View.OnClickListener{
 
-public class CategoryActivity extends AppCompatActivity implements View.OnClickListener{
 
-    ListView listView;
     private Button save;
+    private EditText nameEditText;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category);
-        listView = (ListView) findViewById(R.id.listview);
+        setContentView(R.layout.activity_add_category);
 
-        SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
-
-
-        ArrayList<Category> categories = new ArrayList<>();
-        categories = db.getcategories();
-        String[] values = new String[categories.size()];
-
-        for (int i = 0; i < categories.size(); i++){
-            values[i] = categories.get(i).getName();
-        }
-        db.close();
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, values);
-        listView.setAdapter(adapter);
+        nameEditText = (EditText) findViewById(R.id.name);
 
         save = (Button) findViewById(R.id.save);
         save.setOnClickListener(this);
@@ -62,8 +47,8 @@ public class CategoryActivity extends AppCompatActivity implements View.OnClickL
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        //docastne reseni prepinani mezi aktivitama
-        //TODO docelat prepinani mezi aktivitama
+
+        //noinspection SimplifiableIfStatement
         if (id == R.id.action_spend) {
             Intent intent = new Intent(this,MainActivity.class);
             this.startActivity(intent);
@@ -73,29 +58,34 @@ public class CategoryActivity extends AppCompatActivity implements View.OnClickL
             this.startActivity(intent);
             return true;
         }else if (id == R.id.action_category){
-
+            Intent intent = new Intent(this,CategoryActivity.class);
+            this.startActivity(intent);
             return true;
 
         }else if (id == R.id.action_settings){
-            Intent intent = new Intent(this,SettingsActivity.class);
-            this.startActivity(intent);
+
             return true;
 
         }
 
         return super.onOptionsItemSelected(item);
     }
-
     @Override
     public void onClick(View v) {
 
         switch (v.getId()) {
             case R.id.save:
-                Intent intent = new Intent(this,AddCategoryActivity.class);
-                this.startActivity(intent);
+                Category category = new Category();
+                category.setId(2);
+                category.setName(String.valueOf(nameEditText.getText()));
+
+                SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
+                db.addCategory(category);
+
 
                 break;
 
         }
+
     }
 }

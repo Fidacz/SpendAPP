@@ -47,7 +47,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Button date;
     private Button save;
 
-    private int id;
+    private int id=13;
     private ArrayList<Transaction> transactionList = new ArrayList<>();
 
 

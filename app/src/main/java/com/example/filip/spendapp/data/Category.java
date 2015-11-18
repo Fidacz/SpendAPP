@@ -9,8 +9,12 @@ public class Category {
 
     private int id;
     private String name;
-    private ArrayList<Category> subCategories = new ArrayList<>();
+    private String MasterCategory;
 
+
+    public Category(){
+
+    }
 
     public Category(String name, int id) {
         this.name = name;
@@ -33,11 +37,13 @@ public class Category {
         this.name = name;
     }
 
-    public ArrayList<Category> getSubCategories() {
-        return subCategories;
+    public String getMasterCategory() {
+        return MasterCategory;
     }
 
-    public void addSubCategory (Category category){
-        subCategories.add(category);
+    public void setMasterCategory(String masterCategory) {
+        MasterCategory = masterCategory;
     }
+
+
 }

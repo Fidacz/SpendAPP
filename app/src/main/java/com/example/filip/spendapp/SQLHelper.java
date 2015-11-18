@@ -25,7 +25,8 @@ public class SQLHelper extends SQLiteOpenHelper{
     protected static final int DATABASE_VERSION = 1;
 
     protected static final String TB_TRANSACTION = "TransactionTab";
-    protected static final String ID = "ID";
+    protected static final String ID_TRANSACTION = "ID";
+    //todo prejmenovat
     protected static final String VALUE = "Value";
     protected static final String DATE = "Date";
     protected static final String COMENT = "Coment";
@@ -33,6 +34,10 @@ public class SQLHelper extends SQLiteOpenHelper{
     protected static final String TYPE = "Type";
 
 
+    protected static final String TB_CATEGORY = "CategoryTab";
+    protected static final String ID_CATEGORY = "ID";
+    protected static final String NAME_CATEGORY = "Name";
+    protected static final String MASTER_CATEGORY = "MasterCategory";
 
 
 
@@ -44,7 +49,24 @@ public class SQLHelper extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         // Vytvoreni tabulky
 
-        db.execSQL("CREATE TABLE " + TB_TRANSACTION + "(ID INTEGER PRIMARY KEY, Value REAL NOT NULL, Date TEXT NOT NULL, Coment TEXT, Category TEXT NOT NULL, Type INTEGER NOT NULL)");
+        db.execSQL("CREATE TABLE " + TB_TRANSACTION + "(ID INTEGER PRIMARY KEY, Value REAL NOT NULL, Date TEXT NOT NULL, Coment TEXT, Category TEXT NOT NULL, Type INTEGER NOT NULL)"); //// TODO: 17. 11. 2015 opravit
+        db.execSQL("CREATE TABLE " + TB_CATEGORY + "(" + ID_CATEGORY + " INTEGER PRIMARY KEY, " + NAME_CATEGORY + " TEXT NOT NULL, " + MASTER_CATEGORY + " TEXT)");
+
+
+        /*for test
+        ContentValues values = new ContentValues();
+        values.put(ID_CATEGORY,1);
+        values.put(NAME_CATEGORY,"Test");
+        values.put(MASTER_CATEGORY,"");
+        db.insert(TB_TRANSACTION, null, values);
+
+        ContentValues values2 = new ContentValues();
+        values.put(ID_CATEGORY,2);
+        values.put(NAME_CATEGORY,"Test1");
+        values.put(MASTER_CATEGORY,"Test");
+        db.insert(TB_TRANSACTION, null, values2);
+*/
+        // db.close();
 
 
     }
@@ -60,7 +82,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(ID,transaction.getId());
+        values.put(ID_TRANSACTION,transaction.getId());
         values.put(VALUE,transaction.getValue());
         values.put(DATE,transaction.getDate());
         values.put(CATEGORY,transaction.getCategory());
@@ -75,7 +97,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.execSQL("DELETE FROM" + TB_TRANSACTION +
-        "WHERE ID=" + ID);
+                "WHERE ID=" + ID);
 
         db.close();
     }
@@ -125,4 +147,60 @@ public class SQLHelper extends SQLiteOpenHelper{
         db.close();
         return transactions;
     }
+
+   public void addCategory(Category category) {
+       //saving category to DB
+       SQLiteDatabase db = this.getWritableDatabase();
+
+       ContentValues values = new ContentValues();
+       values.put(ID_CATEGORY,category.getId());
+       values.put(NAME_CATEGORY,category.getName());
+       values.put(MASTER_CATEGORY,category.getMasterCategory());
+
+       db.insert(TB_CATEGORY, null, values);
+       db.close();
+   }
+
+    public Category getCategory(int ID){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Category category = new Category();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM" + TB_CATEGORY + "WHERE ID=" + ID, null);
+
+        category.setId(Integer.valueOf(cursor.getString(0)));
+        category.setName(cursor.getString(3));
+        category.setMasterCategory(cursor.getString(4));
+
+        db.close();
+        return category;
+
+    }
+    public ArrayList<Category> getcategories(){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<Category> categories = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_CATEGORY, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Category category = new Category();
+                category.setId(Integer.valueOf(cursor.getString(0)));
+                category.setName(cursor.getString(1));
+                category.setMasterCategory(cursor.getString(2));
+                categories.add(category);
+            } while (cursor.moveToNext());
+        }
+
+        db.close();
+        return categories;
+
+    }
+
+
+
+
+
+
 }
