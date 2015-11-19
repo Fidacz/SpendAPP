@@ -53,19 +53,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         db.execSQL("CREATE TABLE " + TB_CATEGORY + "(" + ID_CATEGORY + " INTEGER PRIMARY KEY, " + NAME_CATEGORY + " TEXT NOT NULL, " + MASTER_CATEGORY + " TEXT)");
 
 
-        /*for test
-        ContentValues values = new ContentValues();
-        values.put(ID_CATEGORY,1);
-        values.put(NAME_CATEGORY,"Test");
-        values.put(MASTER_CATEGORY,"");
-        db.insert(TB_TRANSACTION, null, values);
 
-        ContentValues values2 = new ContentValues();
-        values.put(ID_CATEGORY,2);
-        values.put(NAME_CATEGORY,"Test1");
-        values.put(MASTER_CATEGORY,"Test");
-        db.insert(TB_TRANSACTION, null, values2);
-*/
         // db.close();
 
 
@@ -148,6 +136,24 @@ public class SQLHelper extends SQLiteOpenHelper{
         return transactions;
     }
 
+
+
+    public  int getMaxIDTransaction(){
+        int ID = 0;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT max("+ID_TRANSACTION+") FROM " + TB_TRANSACTION, null);
+        cursor.moveToFirst();
+        return ID = Integer.valueOf(cursor.getString(0));
+    }
+
+
+
+
+
+
+
+
    public void addCategory(Category category) {
        //saving category to DB
        SQLiteDatabase db = this.getWritableDatabase();
@@ -181,7 +187,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<Category> categories = new ArrayList<>();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_CATEGORY, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_CATEGORY + " ORDER BY " + NAME_CATEGORY +" COLLATE NOCASE ", null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -196,6 +202,15 @@ public class SQLHelper extends SQLiteOpenHelper{
         db.close();
         return categories;
 
+    }
+
+    public  int getMaxIDCategory(){
+        int ID = 0;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT max("+ID_CATEGORY+") FROM " + TB_CATEGORY, null);
+        cursor.moveToFirst();
+        return ID = Integer.valueOf(cursor.getString(0));
     }
 
 

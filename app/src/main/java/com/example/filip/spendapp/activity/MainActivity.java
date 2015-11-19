@@ -47,7 +47,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Button date;
     private Button save;
 
-    private int id=13;
+
     private ArrayList<Transaction> transactionList = new ArrayList<>();
 
 
@@ -127,20 +127,19 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
             case R.id.save:
 
-                id++;
+
                 String stringValue = String.valueOf(valueEditText.getText());
                 //TODO nacteni kategorie
 
                 if (stringValue != null) {
+                    SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
+
                     Double value = Double.parseDouble(stringValue);
                     String textKOmentare = String.valueOf(commentEditText.getText());
                     Date date = new Date();
-                    Transaction transakce = new Transaction(id, value, date, textKOmentare,"testkategorie",0);
+                    Transaction transakce = new Transaction(db.getMaxIDTransaction()+ 1, value, date, textKOmentare,"testkategorie",0);
                     transactionList.add(transakce);
 
-
-
-                    SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
                     db.addTransaction(transakce);
 
                     // docastne resene ukladani xml

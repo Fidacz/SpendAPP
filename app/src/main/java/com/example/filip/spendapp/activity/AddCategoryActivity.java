@@ -75,14 +75,14 @@ public class AddCategoryActivity extends AppCompatActivity implements View.OnCli
 
         switch (v.getId()) {
             case R.id.save:
+                SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
                 Category category = new Category();
-                category.setId(2);
+                category.setId(db.getMaxIDCategory()+ 1);
                 category.setName(String.valueOf(nameEditText.getText()));
 
-                SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
                 db.addCategory(category);
 
-
+                this.finish();
                 break;
 
         }
