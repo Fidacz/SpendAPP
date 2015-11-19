@@ -6,22 +6,44 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import com.example.filip.spendapp.R;
+import com.example.filip.spendapp.SQLHelper;
+import com.example.filip.spendapp.data.Category;
+import com.example.filip.spendapp.data.Transaction;
 
-public class TransactionActivity extends ListActivity {
+import java.util.ArrayList;
+
+public class TransactionActivity  extends AppCompatActivity implements View.OnClickListener  {
+
+
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
-                "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
-                "Linux", "OS/2" };
+        setContentView(R.layout.activity_transaction);
+
+        listView = (ListView) findViewById(R.id.listview);
+
+        SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
+
+
+        ArrayList<Transaction> transactions = new ArrayList<>();
+        transactions = db.getTransactions();
+        String[] values = new String[transactions.size()];
+
+        for (int i = 0; i < transactions.size(); i++){
+            values[i] = String.valueOf(transactions.get(i).getValue());
+        }
+        db.close();
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, values);
-        setListAdapter(adapter);
-        //setContentView(R.layout.activity_transaction);
+        listView.setAdapter(adapter);
     }
 
     @Override
@@ -60,5 +82,10 @@ public class TransactionActivity extends ListActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+
     }
 }

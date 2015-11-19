@@ -72,7 +72,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         ContentValues values = new ContentValues();
         values.put(ID_TRANSACTION,transaction.getId());
         values.put(VALUE,transaction.getValue());
-        values.put(DATE,transaction.getDate());
+        values.put(DATE,transaction.getDate());  //TODO nevhodne ukladani data jako text je potreba predelat
         values.put(CATEGORY,transaction.getCategory());
         values.put(COMENT,transaction.getComment());
         values.put(TYPE,transaction.getType());
@@ -117,7 +117,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<Transaction> transactions = new ArrayList<>();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM" + TB_TRANSACTION, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_TRANSACTION, null);
 
         if (cursor.moveToFirst()) {
             do {

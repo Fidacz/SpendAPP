@@ -65,7 +65,9 @@ public class Transaction {
         this.date = date;
     }
     public void setDate(String date) {
-        this.date = dateParser(date);
+        //zakomentovado z duvody chybne udelane metody getDate
+        // this.date = dateParser(date);
+
     }
 
     public String getComment() {
@@ -95,11 +97,11 @@ public class Transaction {
     private Date dateParser (String date){
         // prevedeni stringu na date
 
-        this.date.setHours(Integer.valueOf(date.substring(0,1)));
-        this.date.setMinutes(Integer.valueOf(date.substring(3, 4)));
-        this.date.setDate(Integer.valueOf(date.substring(6, 7)));
-        this.date.setMonth(Integer.valueOf(date.substring(9, 10)));
-        this.date.setYear(Integer.valueOf(date.substring(12, 15)));
+            this.date.setHours(Integer.valueOf(date.substring(0, 1)));
+            this.date.setMinutes(Integer.valueOf(date.substring(3, 4)));
+            this.date.setDate(Integer.valueOf(date.substring(6, 7)));
+            this.date.setMonth(Integer.valueOf(date.substring(9, 10)));
+            this.date.setYear(Integer.valueOf(date.substring(12, 15)));
 
 
 
