@@ -7,14 +7,18 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.example.filip.spendapp.R;
 import com.example.filip.spendapp.SQLHelper;
+import com.example.filip.spendapp.data.Category;
 import com.example.filip.spendapp.data.Transaction;
 import com.example.filip.spendapp.TransactionXMLParser;
 
@@ -26,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+public class MainActivity extends ActionBarActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
 
     private TextView titleValue;
@@ -46,6 +50,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     private Button date;
     private Button save;
+
 
 
     private ArrayList<Transaction> transactionList = new ArrayList<>();
@@ -70,6 +75,18 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         dateSwitch = (Switch) findViewById(R.id.dateSwitch);
 
         category = (Spinner) findViewById(R.id.category);
+        category.setOnItemSelectedListener(this);
+
+        SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
+        ArrayList<Category> categories = new ArrayList<>();
+        categories = db.getcategories();
+        String[] values = new String[categories.size()];
+
+        for (int i = 0; i < categories.size(); i++){
+            values[i] = categories.get(i).getName();
+        }
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, values);
+        category.setAdapter(dataAdapter);
 
         date = (Button) findViewById(R.id.date);
         date.setOnClickListener(this);
@@ -137,7 +154,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     Double value = Double.parseDouble(stringValue);
                     String textKOmentare = String.valueOf(commentEditText.getText());
                     Date date = new Date();
-                    Transaction transakce = new Transaction(db.getMaxIDTransaction()+ 1, value, date, textKOmentare,"testkategorie",0);
+                    //TODO dodelat osetreni zjisteni ID kdyz v DB jeste enni zadna transakce
+                    Transaction transakce = new Transaction(db.getMaxIDTransaction()+ 1, value, date, textKOmentare,category.getSelectedItem().toString(),0);
                     transactionList.add(transakce);
 
                     db.addTransaction(transakce);
@@ -164,5 +182,15 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
                 break;
         }
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

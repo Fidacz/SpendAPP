@@ -26,6 +26,12 @@
         android:id="@+id/titleMasterCategory"
         android:layout_weight="0.03" />
 
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="100px"
+        android:id="@+id/masterCategory"
+        android:layout_weight="0.03" />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
