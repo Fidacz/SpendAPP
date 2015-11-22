@@ -1,5 +1,7 @@
 package com.example.filip.spendapp.data;
 
+import com.example.filip.spendapp.DateParser;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -15,27 +17,31 @@ public class Transaction {
     private String comment;
     private String category;
     private int type; //type 0 is income, 1 is cost
+    private int isTrasactionExportedToXML;
 
     public Transaction() {
 
     }
 
-    public Transaction(int id, double value, Date date, String comment, String category, int type) {
+    public Transaction(int id, double value, Date date, String comment, String category, int type, int isTrasactionExportedToXML) {
         this.id = id;
         this.value = value;
         this.date = date;
         this.comment = comment;
         this.category = category;
         this.type = type;
+        this.isTrasactionExportedToXML = isTrasactionExportedToXML;
 
     }
-    public Transaction(int id, double value, String date, String comment, String category, int type) {
+    public Transaction(int id, double value, String date, String comment, String category, int type, int isTrasactionExportedToXML) {
         this.id = id;
         this.value = value;
-        this.date = dateParser(date);
+        DateParser dateParser = new DateParser();
+        this.date = dateParser.StringToDate(date);
         this.comment = comment;
         this.category = category;
         this.type = type;
+        this.isTrasactionExportedToXML = isTrasactionExportedToXML;
 
     }
 
@@ -59,16 +65,9 @@ public class Transaction {
 
     public String getDate() {
         // prevedeni Date na string ve formatu hh:mm DD.MM.YYYY
-        //TODO opravit
 
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        String datum = String.valueOf(date.getHours() + ":" +String.valueOf(date.getMinutes()) + " " + day + "." + month + "." + year);
-
-        return datum;
+        DateParser dateParser = new DateParser();
+        return dateParser.dateToString(date);
     }
 
     public void setDate(Date date) {
@@ -76,7 +75,8 @@ public class Transaction {
     }
     public void setDate(String date) {
         //zakomentovado z duvody chybne udelane metody getDate
-         this.date = dateParser(date);
+        DateParser dateParser = new DateParser();
+         this.date = dateParser.StringToDate(date);
 
     }
 
@@ -104,18 +104,11 @@ public class Transaction {
         this.type = type;
     }
 
-    private Date dateParser (String date){
-        // prevedeni stringu na date
-            this.date = new Date();
-            this.date.setHours(Integer.valueOf(date.substring(0, 1)));
-            this.date.setMinutes(Integer.valueOf(date.substring(3, 4)));
-            this.date.setDate(Integer.valueOf(date.substring(6, 7)));
-            this.date.setMonth(Integer.valueOf(date.substring(9, 10)));
-            this.date.setYear(Integer.valueOf(date.substring(12, 14)));
+    public int getIsTrasactionExportedToXML() {
+        return isTrasactionExportedToXML;
+    }
 
-
-
-
-        return null;
+    public void setIsTrasactionExportedToXML(int isTrasactionExportedToXML) {
+        this.isTrasactionExportedToXML = isTrasactionExportedToXML;
     }
 }

@@ -62,8 +62,7 @@ public class TransactionXMLParser {
                             category = text;
                         }else if (name.equals("type")){
                             type = Integer.parseInt(text);
-                        }else if(name.equals("Transaction")){
-                            transactionList.add(new Transaction(id,value,date,comment, category, type));
+
                         }
                         break;
 
@@ -96,11 +95,12 @@ public class TransactionXMLParser {
             xmlSerializer.setOutput(writer);
             xmlSerializer.startDocument("UTF-8", true);
 
-            xmlSerializer.startTag("", "Transaction");
+
 
             for (int i = 0 ; transactions.size() != i; i++ ) {
                 Transaction transaction = transactions.get(i);
 
+                xmlSerializer.startTag("", "Transaction");
                 xmlSerializer.startTag("", "id");
                 xmlSerializer.text(Integer.toString(transaction.getId()));
                 xmlSerializer.endTag("", "id");
@@ -124,10 +124,13 @@ public class TransactionXMLParser {
                 xmlSerializer.startTag("", "Type");
                 xmlSerializer.text(String.valueOf(transaction.getType()));
                 xmlSerializer.endTag("", "Type");
+                xmlSerializer.endTag("", "Transaction");
+
+
 
             }
 
-            xmlSerializer.endTag("", "Transaction");
+
             xmlSerializer.endDocument();
 
             return writer.toString();

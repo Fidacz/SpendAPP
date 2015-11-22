@@ -5,6 +5,7 @@
     <string name="action_category">Category</string>
     <string name="action_transaction">Transaction</string>
     <string name="action_spend">Spend</string>
+    <string name="action_export">Export</string>
     <string name="title_activity_transaction">TransactionActivity</string>
     <string name="title_activity_settings">settings</string>
     <string name="title_activity_category">CategoryActivity</string>

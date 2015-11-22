@@ -10,6 +10,7 @@ import com.example.filip.spendapp.data.Category;
 import com.example.filip.spendapp.data.Transaction;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by fida on 9.8.15.
@@ -32,6 +33,7 @@ public class SQLHelper extends SQLiteOpenHelper{
     protected static final String COMENT = "Coment";
     protected static final String CATEGORY = "Category";
     protected static final String TYPE = "Type";
+    protected static final String IS_TRANSACTION_EXPORTED_TO_XML = "isTrasactionExportedToXML";
 
 
     protected static final String TB_CATEGORY = "CategoryTab";
@@ -49,10 +51,17 @@ public class SQLHelper extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         // Vytvoreni tabulky
 
-        db.execSQL("CREATE TABLE " + TB_TRANSACTION + "(ID INTEGER PRIMARY KEY, Value REAL NOT NULL, Date TEXT NOT NULL, Coment TEXT, Category TEXT NOT NULL, Type INTEGER NOT NULL)"); //// TODO: 17. 11. 2015 opravit
+        db.execSQL("CREATE TABLE " + TB_TRANSACTION + "(ID INTEGER PRIMARY KEY, Value REAL NOT NULL, Date TEXT NOT NULL, Coment TEXT, Category TEXT NOT NULL, Type INTEGER NOT NULL, isTrasactionExportedToXML INTEGER)"); //// TODO: 17. 11. 2015 opravit
         db.execSQL("CREATE TABLE " + TB_CATEGORY + "(" + ID_CATEGORY + " INTEGER PRIMARY KEY, " + NAME_CATEGORY + " TEXT NOT NULL, " + MASTER_CATEGORY + " TEXT)");
 
+        //defaultni kategorie
 
+        ContentValues values = new ContentValues();
+        values.put(ID_CATEGORY,0);
+        values.put(NAME_CATEGORY,"Jídlo");
+        values.put(MASTER_CATEGORY,"");
+
+        db.insert(TB_CATEGORY, null, values);
 
         // db.close();
 
@@ -76,6 +85,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         values.put(CATEGORY,transaction.getCategory());
         values.put(COMENT,transaction.getComment());
         values.put(TYPE,transaction.getType());
+        values.put(IS_TRANSACTION_EXPORTED_TO_XML, transaction.getIsTrasactionExportedToXML());
 
         db.insert(TB_TRANSACTION, null, values);
         db.close();
@@ -105,7 +115,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         transaction.setComent(cursor.getString(3));
         transaction.setCategory(cursor.getString(4));
         transaction.setType(Integer.valueOf(cursor.getString(5)));
-
+        transaction.setIsTrasactionExportedToXML(Integer.valueOf(cursor.getString(6)));
 
         db.close();
         return transaction;
@@ -128,12 +138,61 @@ public class SQLHelper extends SQLiteOpenHelper{
                 transaction.setComent(cursor.getString(3));
                 transaction.setCategory(cursor.getString(4));
                 transaction.setType(Integer.valueOf(cursor.getString(5)));
+                transaction.setIsTrasactionExportedToXML(Integer.valueOf(cursor.getString(6)));
                 transactions.add(transaction);
             } while (cursor.moveToNext());
         }
 
         db.close();
         return transactions;
+    }
+
+    public ArrayList<Transaction> getNotExportedTransactions (){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<Transaction> transactions = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_TRANSACTION + " WHERE " +IS_TRANSACTION_EXPORTED_TO_XML + " =0" , null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Transaction transaction = new Transaction();
+                transaction.setId(Integer.valueOf(cursor.getString(0)));
+                transaction.setValue(Double.valueOf(cursor.getString(1)));
+                transaction.setDate(cursor.getString(2));
+                transaction.setComent(cursor.getString(3));
+                transaction.setCategory(cursor.getString(4));
+                transaction.setType(Integer.valueOf(cursor.getString(5)));
+                transaction.setIsTrasactionExportedToXML(Integer.valueOf(cursor.getString(6)));
+                transactions.add(transaction);
+            } while (cursor.moveToNext());
+        }
+
+        db.close();
+        return transactions;
+    }
+
+    public void updateTransaction(Transaction transaction){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.execSQL("UPDATE " + TB_TRANSACTION +
+                " SET "+ VALUE+"="+transaction.getValue()+" "+ DATE+"="+transaction.getDate()+" "+ COMENT+"="+transaction.getComment()+" "+ CATEGORY+"="+transaction.getCategory()+" "+ IS_TRANSACTION_EXPORTED_TO_XML+"="+transaction.getIsTrasactionExportedToXML()+
+                " WHERE ID=" + transaction.getId());
+
+        db.close();
+
+    }
+
+    public void updateTransactionExportedParametr(int id){
+        //metoda nastavi u transakce priznak ze byla exportovana do XML
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.execSQL("UPDATE " + TB_TRANSACTION +
+                " SET "+ IS_TRANSACTION_EXPORTED_TO_XML+" = 1"+
+                " WHERE ID = " + id);
+
+        db.close();
+
     }
 
 
@@ -144,7 +203,11 @@ public class SQLHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT max("+ID_TRANSACTION+") FROM " + TB_TRANSACTION, null);
         cursor.moveToFirst();
-        return ID = Integer.valueOf(cursor.getString(0));
+
+        if (null != cursor.getString(0)) {
+            return ID = Integer.valueOf(cursor.getString(0));
+        } //pokud v DB neni zadna transakce tak vrati 0
+        return 0;
     }
 
 

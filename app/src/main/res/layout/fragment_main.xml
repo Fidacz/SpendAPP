@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/valueSwitch"
                 android:layout_column="1"
-                android:checked="false" />
+                android:checked="true" />
         </TableRow>
 
         <TableRow

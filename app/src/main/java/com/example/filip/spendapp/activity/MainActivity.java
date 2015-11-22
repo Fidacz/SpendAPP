@@ -16,6 +16,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
 
+import com.example.filip.spendapp.DateParser;
 import com.example.filip.spendapp.R;
 import com.example.filip.spendapp.SQLHelper;
 import com.example.filip.spendapp.data.Category;
@@ -48,11 +49,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     private Spinner category;
 
-    private Button date;
+    private Button dateBTN;
     private Button save;
 
 
-
+    private Date date;
     private ArrayList<Transaction> transactionList = new ArrayList<>();
 
 
@@ -88,8 +89,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, values);
         category.setAdapter(dataAdapter);
 
-        date = (Button) findViewById(R.id.date);
-        date.setOnClickListener(this);
+        dateBTN = (Button) findViewById(R.id.date);
+        date = new Date();
+        DateParser dateParser = new DateParser();
+        dateBTN.setText(dateParser.dateToString(date));
+        dateBTN.setOnClickListener(this);
         save = (Button) findViewById(R.id.save);
         save.setOnClickListener(this);
     }
@@ -129,6 +133,44 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             Intent intent = new Intent(this,SettingsActivity.class);
             this.startActivity(intent);
             return true;
+        }else if (id == R.id.action_export){
+
+            //testovaci export do xml  Environment.getExternalStorageDirectory() + File.separator
+
+            String state = Environment.getExternalStorageState();
+            if (Environment.MEDIA_MOUNTED.equals(state )) {
+
+
+                File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + "spendapp2.xml");
+
+
+                try {
+                    file.createNewFile();
+                    FileOutputStream fileos = new FileOutputStream(file);
+                    OutputStreamWriter osw = new OutputStreamWriter(fileos);
+                    // Write the string to the file
+                    SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
+                    ArrayList<Transaction> transactionList = new ArrayList<>();
+                    transactionList = db.getNotExportedTransactions();
+                    osw.write(TransactionXMLParser.creteXML(transactionList));
+                    for (int i=0; i < transactionList.size() ; i ++ ){
+                        db.updateTransactionExportedParametr(transactionList.get(i).getId());
+                    }
+
+                    db.close();
+                    // save and close
+                    osw.flush();
+                    osw.close();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+
+
+            return true;
 
         }
 
@@ -146,21 +188,28 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
 
                 String stringValue = String.valueOf(valueEditText.getText());
-                //TODO nacteni kategorie
 
-                if (stringValue != null) {
+
+                if (stringValue.equals("")) {
+                    break; // pokud neni vyplnená catka tak se nic ukladat nebude
+                }
+                    int typeOfTransacion = 0;
                     SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
 
                     Double value = Double.parseDouble(stringValue);
                     String textKOmentare = String.valueOf(commentEditText.getText());
-                    Date date = new Date();
-                    //TODO dodelat osetreni zjisteni ID kdyz v DB jeste enni zadna transakce
-                    Transaction transakce = new Transaction(db.getMaxIDTransaction()+ 1, value, date, textKOmentare,category.getSelectedItem().toString(),0);
+
+
+                    if (valueSwitch.isChecked()){
+                       typeOfTransacion = 1;  // pokud je to vydaj hodnota se udela zaporna
+                    }
+                    Transaction transakce = new Transaction(db.getMaxIDTransaction()+ 1, value, date, textKOmentare,category.getSelectedItem().toString(),typeOfTransacion,0 );
                     transactionList.add(transakce);
 
                     db.addTransaction(transakce);
+                    db.close();
 
-                    // docastne resene ukladani xml
+                    /** docastne resene ukladani xml
                     File file = new File(Environment.getExternalStorageDirectory() + File.separator + "spendapp.xml");
 
                     try {
@@ -176,8 +225,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    **/
 
-                }
 
 
                 break;
