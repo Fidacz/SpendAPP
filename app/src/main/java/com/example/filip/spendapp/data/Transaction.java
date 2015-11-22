@@ -1,5 +1,8 @@
 package com.example.filip.spendapp.data;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -57,7 +60,14 @@ public class Transaction {
     public String getDate() {
         // prevedeni Date na string ve formatu hh:mm DD.MM.YYYY
         //TODO opravit
-        String datum = String.valueOf(date.getHours() + ":" +String.valueOf(date.getMinutes()) + " " + String.valueOf(date.getDay() + "." + String.valueOf(date.getMonth()) + "." + String.valueOf(date.getYear())));
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        String datum = String.valueOf(date.getHours() + ":" +String.valueOf(date.getMinutes()) + " " + day + "." + month + "." + year);
+
         return datum;
     }
 
@@ -66,7 +76,7 @@ public class Transaction {
     }
     public void setDate(String date) {
         //zakomentovado z duvody chybne udelane metody getDate
-        // this.date = dateParser(date);
+         this.date = dateParser(date);
 
     }
 
@@ -96,12 +106,12 @@ public class Transaction {
 
     private Date dateParser (String date){
         // prevedeni stringu na date
-
+            this.date = new Date();
             this.date.setHours(Integer.valueOf(date.substring(0, 1)));
             this.date.setMinutes(Integer.valueOf(date.substring(3, 4)));
             this.date.setDate(Integer.valueOf(date.substring(6, 7)));
             this.date.setMonth(Integer.valueOf(date.substring(9, 10)));
-            this.date.setYear(Integer.valueOf(date.substring(12, 15)));
+            this.date.setYear(Integer.valueOf(date.substring(12, 14)));
 
 
 

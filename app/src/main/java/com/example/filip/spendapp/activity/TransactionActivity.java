@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -17,10 +18,11 @@ import com.example.filip.spendapp.data.Transaction;
 
 import java.util.ArrayList;
 
-public class TransactionActivity  extends AppCompatActivity implements View.OnClickListener  {
+public class TransactionActivity  extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemLongClickListener   {
 
 
     ListView listView;
+    ArrayList<Transaction> transactions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,22 +30,15 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_transaction);
 
         listView = (ListView) findViewById(R.id.listview);
+        listView.setOnItemLongClickListener(this);
 
         SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
 
 
-        ArrayList<Transaction> transactions = new ArrayList<>();
+        transactions = new ArrayList<>();
         transactions = db.getTransactions();
-        String[] values = new String[transactions.size()];
-
-        for (int i = 0; i < transactions.size(); i++){
-            values[i] = String.valueOf(transactions.get(i).getValue());
-        }
         db.close();
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, values);
-        listView.setAdapter(adapter);
+        showNames();
     }
 
     @Override
@@ -86,6 +81,33 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
 
     @Override
     public void onClick(View v) {
+
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+        SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
+        db.delteTransaction(transactions.get(position).getId());
+        db.close();
+        transactions.remove(position);
+        showNames();
+
+        return false;
+    }
+
+    private void showNames() {
+
+        String[] values = new String[transactions.size()];
+
+        for (int i = 0; i < transactions.size(); i++){
+            values[i] = String.valueOf(transactions.get(i).getValue());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, values);
+        listView.setAdapter(adapter);
+
 
     }
 }

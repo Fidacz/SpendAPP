@@ -72,7 +72,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         ContentValues values = new ContentValues();
         values.put(ID_TRANSACTION,transaction.getId());
         values.put(VALUE,transaction.getValue());
-        values.put(DATE,transaction.getDate());  //TODO nevhodne ukladani data jako text je potreba predelat
+        values.put(DATE,transaction.getDate());
         values.put(CATEGORY,transaction.getCategory());
         values.put(COMENT,transaction.getComment());
         values.put(TYPE,transaction.getType());
@@ -84,8 +84,8 @@ public class SQLHelper extends SQLiteOpenHelper{
     public void delteTransaction(int ID){
         SQLiteDatabase db = this.getWritableDatabase();
 
-        db.execSQL("DELETE FROM" + TB_TRANSACTION +
-                "WHERE ID=" + ID);
+        db.execSQL("DELETE FROM " + TB_TRANSACTION +
+                " WHERE ID=" + ID);
 
         db.close();
     }
@@ -203,6 +203,17 @@ public class SQLHelper extends SQLiteOpenHelper{
         return categories;
 
     }
+
+    public void delteCategory(int ID){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.execSQL("DELETE FROM " + TB_CATEGORY +
+                " WHERE ID=" + ID);
+
+        db.close();
+    }
+
+
 
     public  int getMaxIDCategory(){
         int ID = 0;
