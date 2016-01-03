@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:orientation="vertical"
+    android:paddingLeft="40dp"
+    tools:context=".MainActivity" >
+
+
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:gravity="center_vertical"
+        android:text="@string/hello_world"
+        android:textSize="20sp"
+        >
+    </TextView>
+
+
+
+</LinearLayout>

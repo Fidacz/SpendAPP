@@ -10,6 +10,7 @@ public class Category {
     private int id;
     private String name;
     private String MasterCategory;
+    private boolean isSelected = false;
 
 
     public Category(){
@@ -19,6 +20,7 @@ public class Category {
     public Category(String name, int id) {
         this.name = name;
         this.id = id;
+
     }
 
     public int getId() {
@@ -45,5 +47,11 @@ public class Category {
         MasterCategory = masterCategory;
     }
 
+    public boolean isSelected() {
+        return isSelected;
+    }
 
+    public void setIsSelected(boolean isSelected) {
+        this.isSelected = isSelected;
+    }
 }

@@ -10,4 +10,5 @@
     <string name="title_activity_settings">settings</string>
     <string name="title_activity_category">CategoryActivity</string>
     <string name="title_activity_add_category">AddCategoryActivity</string>
+    <color name="lgray">#ffcccccc</color>
 </resources>

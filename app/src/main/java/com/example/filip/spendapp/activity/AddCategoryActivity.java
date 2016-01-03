@@ -6,12 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.example.filip.spendapp.R;
 import com.example.filip.spendapp.SQLHelper;
@@ -22,7 +20,7 @@ import java.util.ArrayList;
 /**
  * Created by Filip on 18. 11. 2015.
  */
-public class AddCategoryActivity extends AppCompatActivity implements View.OnClickListener, OnItemSelectedListener {
+public class AddCategoryActivity extends AppCompatActivity implements View.OnClickListener {
 
 
     private Button save;
@@ -38,20 +36,22 @@ public class AddCategoryActivity extends AppCompatActivity implements View.OnCli
 
         nameEditText = (EditText) findViewById(R.id.name);
         masterCategory = (Spinner) findViewById(R.id.masterCategory);
-        masterCategory.setOnItemSelectedListener(this);
-
-
         SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
         ArrayList<Category> categories = new ArrayList<>();
-        categories = db.getcategories();
-        String[] values = new String[categories.size()];
+        categories = db.getMasterCategories();
+        String[] values = new String[categories.size() + 1];
 
-        for (int i = 0; i < categories.size(); i++){
-            values[i] = categories.get(i).getName();
+        for (int i = 0; i < categories.size() ; i++){
+            if (i == 0){
+                //prazdna kategorie
+                values[i] = "";
+            }
+            values[i+1] = categories.get(i).getName();
         }
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, values);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         masterCategory.setAdapter(dataAdapter);
+
 
 
         save = (Button) findViewById(R.id.save);
@@ -101,9 +101,13 @@ public class AddCategoryActivity extends AppCompatActivity implements View.OnCli
             case R.id.save:
                 SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
                 Category category = new Category();
-                category.setId(db.getMaxIDCategory()+ 1);
+                category.setId(db.getMaxIDCategory() + 1);
                 category.setName(String.valueOf(nameEditText.getText()));
-            //TODO dodelat ukladani nadrazene kategorie
+                if (!String.valueOf(masterCategory.getSelectedItem()).equals("")) {
+                    //kdyz to je mastr kategorie
+                category.setMasterCategory(String.valueOf(masterCategory.getSelectedItem()));
+            }
+
                 db.addCategory(category);
 
                 this.finish();
@@ -113,13 +117,5 @@ public class AddCategoryActivity extends AppCompatActivity implements View.OnCli
 
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
 }

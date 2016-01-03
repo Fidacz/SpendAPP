@@ -1,5 +1,6 @@
 package com.example.filip.spendapp;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -52,7 +53,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         // Vytvoreni tabulky
 
         db.execSQL("CREATE TABLE " + TB_TRANSACTION + "(ID INTEGER PRIMARY KEY, Value REAL NOT NULL, Date TEXT NOT NULL, Coment TEXT, Category TEXT NOT NULL, Type INTEGER NOT NULL, isTrasactionExportedToXML INTEGER)"); //// TODO: 17. 11. 2015 opravit
-        db.execSQL("CREATE TABLE " + TB_CATEGORY + "(" + ID_CATEGORY + " INTEGER PRIMARY KEY, " + NAME_CATEGORY + " TEXT NOT NULL, " + MASTER_CATEGORY + " TEXT)");
+        db.execSQL("CREATE TABLE " + TB_CATEGORY + "(" + ID_CATEGORY + " INTEGER PRIMARY KEY, " + NAME_CATEGORY + " TEXT NOT NULL UNIQUE, " + MASTER_CATEGORY + " TEXT)");
 
         //defaultni kategorie
 
@@ -201,7 +202,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         int ID = 0;
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT max("+ID_TRANSACTION+") FROM " + TB_TRANSACTION, null);
+        Cursor cursor = db.rawQuery("SELECT max(" + ID_TRANSACTION + ") FROM " + TB_TRANSACTION, null);
         cursor.moveToFirst();
 
         if (null != cursor.getString(0)) {
@@ -222,9 +223,10 @@ public class SQLHelper extends SQLiteOpenHelper{
        SQLiteDatabase db = this.getWritableDatabase();
 
        ContentValues values = new ContentValues();
-       values.put(ID_CATEGORY,category.getId());
+       values.put(ID_CATEGORY, category.getId());
        values.put(NAME_CATEGORY,category.getName());
-       values.put(MASTER_CATEGORY,category.getMasterCategory());
+       values.put(MASTER_CATEGORY, category.getMasterCategory());
+
 
        db.insert(TB_CATEGORY, null, values);
        db.close();
@@ -282,9 +284,54 @@ public class SQLHelper extends SQLiteOpenHelper{
         int ID = 0;
 
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT max("+ID_CATEGORY+") FROM " + TB_CATEGORY, null);
+         Cursor cursor = db.rawQuery("SELECT max(" + ID_CATEGORY + ") FROM " + TB_CATEGORY, null);
         cursor.moveToFirst();
-        return ID = Integer.valueOf(cursor.getString(0));
+
+        if (null != cursor.getString(0)) {
+            return ID = Integer.valueOf(cursor.getString(0));
+        } //pokud v DB neni zadna transakce tak vrati 0
+        return 0;
+    }
+
+    public ArrayList<Category> getMasterCategories(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<Category> categories = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_CATEGORY + " WHERE "+ MASTER_CATEGORY +" IS NULL ORDER BY " + NAME_CATEGORY +" COLLATE NOCASE ", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Category category = new Category();
+                category.setId(Integer.valueOf(cursor.getString(0)));
+                category.setName(cursor.getString(1));
+                category.setMasterCategory(cursor.getString(2));
+                categories.add(category);
+            } while (cursor.moveToNext());
+        }
+
+        db.close();
+        return categories;
+    }
+
+    public ArrayList<Category> getSlaveCategories(String masterCategoryName){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<Category> categories = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_CATEGORY + " WHERE "+ MASTER_CATEGORY + " = '" + masterCategoryName + "' ORDER BY " + NAME_CATEGORY +" COLLATE NOCASE ", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Category category = new Category();
+                category.setId(Integer.valueOf(cursor.getString(0)));
+                category.setName(cursor.getString(1));
+                category.setMasterCategory(cursor.getString(2));
+                categories.add(category);
+            } while (cursor.moveToNext());
+        }
+
+        db.close();
+        return categories;
     }
 
 
