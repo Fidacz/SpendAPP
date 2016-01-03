@@ -104,7 +104,6 @@ public class SQLHelper extends SQLiteOpenHelper{
 
 
     public Transaction getTransaction (int ID){
-
         SQLiteDatabase db = this.getWritableDatabase();
         Transaction transaction = new Transaction();
 
@@ -189,7 +188,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.execSQL("UPDATE " + TB_TRANSACTION +
-                " SET "+ IS_TRANSACTION_EXPORTED_TO_XML+" = 1"+
+                " SET " + IS_TRANSACTION_EXPORTED_TO_XML + " = 1" +
                 " WHERE ID = " + id);
 
         db.close();
@@ -208,7 +207,10 @@ public class SQLHelper extends SQLiteOpenHelper{
         if (null != cursor.getString(0)) {
             return ID = Integer.valueOf(cursor.getString(0));
         } //pokud v DB neni zadna transakce tak vrati 0
+
+
         return 0;
+
     }
 
 
@@ -232,16 +234,32 @@ public class SQLHelper extends SQLiteOpenHelper{
        db.close();
    }
 
+    public void updateCategory(Category category) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        if (category.getMasterCategory() == null) {
+            //nema zadneho mastra
+            db.execSQL("UPDATE  " + TB_CATEGORY +
+                    " SET " + NAME_CATEGORY + " = '" + category.getName() + "', " + MASTER_CATEGORY + " = NULL WHERE ID=" + category.getId());
+
+        } else {
+            db.execSQL("UPDATE  " + TB_CATEGORY +
+                    " SET " + NAME_CATEGORY + " = '" + category.getName() + "', " + MASTER_CATEGORY + " = '" + category.getMasterCategory() +
+                    "' WHERE ID=" + category.getId());
+       }
+        db.close();
+    }
+
     public Category getCategory(int ID){
 
         SQLiteDatabase db = this.getWritableDatabase();
         Category category = new Category();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM" + TB_CATEGORY + "WHERE ID=" + ID, null);
-
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_CATEGORY + " WHERE ID=" + ID, null);
+        cursor.moveToFirst();
         category.setId(Integer.valueOf(cursor.getString(0)));
-        category.setName(cursor.getString(3));
-        category.setMasterCategory(cursor.getString(4));
+        category.setName(cursor.getString(1));
+        category.setMasterCategory(cursor.getString(2));
 
         db.close();
         return category;

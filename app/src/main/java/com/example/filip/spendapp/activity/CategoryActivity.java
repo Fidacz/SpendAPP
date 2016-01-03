@@ -34,7 +34,7 @@ public class CategoryActivity extends AppCompatActivity implements View.OnClickL
     private Button dellBtn;
     private Button addBtn;
     private Button editBtn;
-    private SparseArray<CategoryGroup> groups = new SparseArray<CategoryGroup>();
+    private SparseArray<CategoryGroup> groups = new SparseArray<CategoryGroup>();;
     private View viewContainerAdd;
     private View viewContainerEdit;
     private CategoryAdapter adapter;
@@ -42,13 +42,15 @@ public class CategoryActivity extends AppCompatActivity implements View.OnClickL
     private int selectedGroupID;
     private int selectedChildID;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 
         setContentView(R.layout.activity_category);
-        createData();
+
+         createData();
         listView = (ExpandableListView) findViewById(R.id.exlistView);
         viewContainerAdd = findViewById(R.id.addbar);
         viewContainerEdit = findViewById(R.id.editbar);
@@ -64,8 +66,12 @@ public class CategoryActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onResume() {
         super.onResume();
+        groups.clear();
         createData();
         adapter.notifyDataSetChanged();
+        viewContainerEdit.setVisibility(View.GONE);
+        viewContainerAdd.setVisibility(View.VISIBLE);
+
     }
 
 
@@ -119,6 +125,16 @@ public class CategoryActivity extends AppCompatActivity implements View.OnClickL
 
             case R.id.editbar_button:
             //TODO dodelat edit
+                Intent intent2 = new Intent(this,AddCategoryActivity.class);
+                if (selectedChildID == -1){
+                    //je vybran rodic
+                    intent2.putExtra("id",groups.get(selectedGroupID).category.getId());
+                }else{
+                    intent2.putExtra("id", groups.get(selectedGroupID).children.get(selectedChildID).getId());
+
+                    //je vybrano dite
+                }
+                this.startActivity(intent2);
                 break;
             case R.id.dellbar_button:
 

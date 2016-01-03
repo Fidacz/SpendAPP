@@ -25,7 +25,9 @@ public class AddCategoryActivity extends AppCompatActivity implements View.OnCli
 
     private Button save;
     private EditText nameEditText;
-    Spinner masterCategory ;
+    private Spinner masterCategory ;
+    private Category category = new Category();
+    private boolean isEdit;
 
 
 
@@ -41,21 +43,44 @@ public class AddCategoryActivity extends AppCompatActivity implements View.OnCli
         categories = db.getMasterCategories();
         String[] values = new String[categories.size() + 1];
 
-        for (int i = 0; i < categories.size() ; i++){
+        for (int i = 0; i < categories.size() +1 ; i++){
             if (i == 0){
                 //prazdna kategorie
-                values[i] = "";
+            values[i] = "";
+        }else {
+                values[i] = categories.get(i - 1).getName();
             }
-            values[i+1] = categories.get(i).getName();
         }
+
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, values);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         masterCategory.setAdapter(dataAdapter);
-
-
-
         save = (Button) findViewById(R.id.save);
         save.setOnClickListener(this);
+
+        Bundle bundle = getIntent().getExtras();
+
+
+        if (bundle != null ){
+            // editace doplneni hodnot
+            isEdit = true;
+            category = db.getCategory(bundle.getInt("id"));
+            nameEditText.setText(category.getName());
+
+                if (category.getMasterCategory() == null){
+                    masterCategory.setSelection(0);
+                }else {
+                    for (int i = 0; i < categories.size() +1 ; i++){
+                        if (category.getMasterCategory().equals(values[i])) {
+                             masterCategory.setSelection(i);
+                    }
+                }
+            }
+
+
+        }
+
+        db.close();
     }
 
     @Override
@@ -99,17 +124,56 @@ public class AddCategoryActivity extends AppCompatActivity implements View.OnCli
 
         switch (v.getId()) {
             case R.id.save:
-                SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
-                Category category = new Category();
-                category.setId(db.getMaxIDCategory() + 1);
-                category.setName(String.valueOf(nameEditText.getText()));
-                if (!String.valueOf(masterCategory.getSelectedItem()).equals("")) {
-                    //kdyz to je mastr kategorie
-                category.setMasterCategory(String.valueOf(masterCategory.getSelectedItem()));
-            }
+                SQLHelper db = new SQLHelper(this, "spendApp", null, 1);
+                if (isEdit){
+                    //jedna se o editaci existujici kategorie
 
-                db.addCategory(category);
 
+                    if(category.getMasterCategory() == null && !String.valueOf(masterCategory.getSelectedItem()).equals("")  ){
+                        // pokud master se stava slave musis slaves prejit pod noveho mastra
+                        ArrayList<Category> slaveCategories = db.getSlaveCategories(category.getName());
+                        for (int i = 0; i <slaveCategories.size(); i++ ){
+                            slaveCategories.get(i).setMasterCategory(String.valueOf(masterCategory.getSelectedItem()));
+                            db.updateCategory(slaveCategories.get(i));
+                        }
+                    }
+
+                    if (String.valueOf(masterCategory.getSelectedItem()).equals("")) {
+                        //je mastr
+                        category.setMasterCategory(null);
+                        if (!category.getName().equals(String.valueOf(nameEditText.getText()))){
+                            //mastr meni meno, u sve jeho slave se musi zmenit mastrname
+                            ArrayList<Category> slaveCategories = db.getSlaveCategories(category.getName());
+                            for (int i = 0; i <slaveCategories.size(); i++ ){
+                                slaveCategories.get(i).setMasterCategory(String.valueOf(nameEditText.getText()));
+                                db.updateCategory(slaveCategories.get(i));
+                            }
+                        }
+                    }else {
+                        category.setMasterCategory(String.valueOf(masterCategory.getSelectedItem()));
+                    }
+
+                    category.setName(String.valueOf(nameEditText.getText()));
+
+
+
+
+                    db.updateCategory(category);
+
+                }else {
+                    //nova categorie
+
+                    category.setId(db.getMaxIDCategory() + 1);
+                    category.setName(String.valueOf(nameEditText.getText()));
+                    if (!String.valueOf(masterCategory.getSelectedItem()).equals("")) {
+                        //kdyz to je mastr kategorie
+                        category.setMasterCategory(String.valueOf(masterCategory.getSelectedItem()));
+                    }
+
+                    db.addCategory(category);
+
+                }
+                db.close();
                 this.finish();
                 break;
 
