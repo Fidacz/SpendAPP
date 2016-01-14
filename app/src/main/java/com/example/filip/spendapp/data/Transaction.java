@@ -63,11 +63,17 @@ public class Transaction {
         this.value = value;
     }
 
+
     public String getDate() {
         // prevedeni Date na string ve formatu hh:mm DD.MM.YYYY
 
         DateParser dateParser = new DateParser();
         return dateParser.dateToString(date);
+    }
+
+    public Date getDateDate() {
+
+        return date;
     }
 
     public void setDate(Date date) {
