@@ -10,5 +10,21 @@
     <string name="title_activity_settings">settings</string>
     <string name="title_activity_category">CategoryActivity</string>
     <string name="title_activity_add_category">AddCategoryActivity</string>
+    <string name="m0">Leden</string>
+    <string name="m1">Unor</string>
+    <string name="m2">Březen</string>
+    <string name="m3">Duben</string>
+    <string name="m4">Květen</string>
+    <string name="m5">Červen</string>
+    <string name="m6">Červenec</string>
+    <string name="m7">Srpen</string>
+    <string name="m8">Září</string>
+    <string name="m9">Říjen</string>
+    <string name="m10">Listopad</string>
+    <string name="m11">Prosinec</string>
+
+
+
+
     <color name="lgray">#ffcccccc</color>
 </resources>

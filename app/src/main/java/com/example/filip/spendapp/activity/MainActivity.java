@@ -228,7 +228,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     **/
 
 
-
+                this.finish();
                 break;
         }
     }

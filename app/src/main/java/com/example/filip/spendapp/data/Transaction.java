@@ -18,6 +18,7 @@ public class Transaction {
     private String category;
     private int type; //type 0 is income, 1 is cost
     private int isTrasactionExportedToXML;
+    private boolean isSelected;
 
     public Transaction() {
 
@@ -116,5 +117,13 @@ public class Transaction {
 
     public void setIsTrasactionExportedToXML(int isTrasactionExportedToXML) {
         this.isTrasactionExportedToXML = isTrasactionExportedToXML;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setIsSelected(boolean isSelected) {
+        this.isSelected = isSelected;
     }
 }

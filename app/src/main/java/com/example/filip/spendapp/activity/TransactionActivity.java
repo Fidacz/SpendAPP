@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 
@@ -32,10 +33,16 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
 
     //ArrayList<Transaction> transactions;
     private ExpandableListView listView;
+    private Button dellBtn;
+    private Button addBtn;
+    private Button editBtn;
     private SparseArray<TransactioGroup> groups = new SparseArray<TransactioGroup>();;
     private View viewContainerAdd;
     private View viewContainerEdit;
     private TransactionAdapter adapter;
+
+    private int selectedGroupID;
+    private int selectedChildID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +58,9 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
         adapter = new TransactionAdapter(this,groups);
         listView.setAdapter(adapter);
         listView.setOnItemLongClickListener(this);
+        viewContainerAdd = findViewById(R.id.addbar);
+        viewContainerEdit = findViewById(R.id.editbar);
+        showAddBar(viewContainerAdd);
         //showAddBar(viewContainerAdd);
 
         /**
@@ -67,7 +77,15 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
          */
     }
 
+    public void onResume() {
+        super.onResume();
+        groups.clear();
+        createData();
+        adapter.notifyDataSetChanged();
+        viewContainerEdit.setVisibility(View.GONE);
+        viewContainerAdd.setVisibility(View.VISIBLE);
 
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -110,6 +128,64 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
     @Override
     public void onClick(View v) {
 
+        switch (v.getId()){
+            case R.id.addbar_button:
+                Intent intent = new Intent(this,MainActivity.class);
+                this.startActivity(intent);
+                break;
+
+            case R.id.editbar_button:
+                //TODO dodelat edit
+                /**
+                Intent intent2 = new Intent(this,AddCategoryActivity.class);
+                if (selectedChildID == -1){
+                    //je vybran rodic
+                    intent2.putExtra("id",groups.get(selectedGroupID).category.getId());
+                }else{
+                    intent2.putExtra("id", groups.get(selectedGroupID).children.get(selectedChildID).getId());
+
+                    //je vybrano dite
+                }
+                this.startActivity(intent2);
+                 */
+                break;
+            case R.id.dellbar_button:
+
+            /**
+
+                if (selectedChildID == -1){
+                    //je vybran rodic
+                    for (int i = 0; i < groups.get(selectedGroupID).children.size(); i++){
+                        db.delteCategory(groups.get(selectedGroupID).children.get(i).getId());
+
+                    }
+
+                    db.delteCategory(groups.get(selectedGroupID).category.getId());
+                    for (int i = selectedGroupID; i < groups.size(); i ++){
+                        groups.setValueAt(i, groups.get(i + 1));
+                    }
+                    groups.remove(groups.size() - 1);
+
+
+                }else{
+
+             */
+                    SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
+                    db.delteTransaction(groups.get(selectedGroupID).getChildren().get(selectedChildID).getId());
+                    groups.get(selectedGroupID).getChildren().remove(selectedChildID);
+
+                    //je vybrano dite
+
+
+                adapter.notifyDataSetChanged();
+                db.close();
+
+                viewContainerEdit.setVisibility(View.GONE);
+                viewContainerAdd.setVisibility(View.VISIBLE);
+
+                break;
+        }
+
     }
 
     private void createData() {
@@ -120,7 +196,7 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
         Collections.sort(transactions, new TransactionComparator());
 
         int idgroup = -1;
-        for (int i = 0; i < transactions.size(); i++) {
+        for (int i = 0; i < transactions.size(); i ++) {
             TransactioGroup group = new TransactioGroup(transactions.get(i));
             idgroup++;
             if(transactions.size() == 1){
@@ -129,13 +205,22 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
                 break;
             }
             //ArrayList<Transaction> transaction;
-            while (transactions.get(i).getDateDate().getMonth() == transactions.get(i+1).getDateDate().getMonth() + 1){
+            if ( transactions.size() != i+1) {
+
+
+
+                group.getChildren().add(transactions.get(i));
+                while (i < transactions.size()-1 && transactions.get(i).getDateDate().getMonth() == transactions.get(i + 1).getDateDate().getMonth()) {
+                    group.getChildren().add(transactions.get(i+1));
+                    i++;
+
+                }
+
+            }else{
                 group.getChildren().add(transactions.get(i));
                 i++;
-                if (i >= transactions.size())
-                    break;
+
             }
-            i--;
 
             //for (int j = 0; j < slavesCategories.size(); j++) {
             //    group.children.add(slavesCategories.get(j));
@@ -149,7 +234,81 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
 
+        if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_CHILD) {
+            int groupPosition = ExpandableListView.getPackedPositionGroup(id);
+            int childPosition = ExpandableListView.getPackedPositionChild(id);
+
+            selectedGroupID = groupPosition;
+            selectedChildID = childPosition;
+
+            viewContainerAdd.setVisibility(View.GONE);
+            showEditBar(viewContainerEdit);
+
+            if (groups.get(groupPosition).getChildren().get(childPosition).isSelected()){
+                groups.get(groupPosition).getChildren().get(childPosition).setIsSelected(false);
+                adapter.notifyDataSetChanged();
+                viewContainerEdit.setVisibility(View.GONE);
+                viewContainerAdd.setVisibility(View.VISIBLE);
+                return true;
+            }
+            parentsSetIsSelectedOnFalse();
+            childrenSetIsSelectedOnFalse();
+            groups.get(groupPosition).getChildren().get(childPosition).setIsSelected(true);
+            adapter.notifyDataSetChanged();
+
+
+            return true;
+        }
+
+
+        if (ExpandableListView.getPackedPositionType(id) == ExpandableListView.PACKED_POSITION_TYPE_GROUP) {
+            int groupPosition = ExpandableListView.getPackedPositionGroup(id);
+            int childPosition = ExpandableListView.getPackedPositionChild(id);
+
+
+            return true;
+        }
         return false;
+
+
+    }
+    public void showAddBar(final View viewContainer) {
+        addBtn = (Button) viewContainer.findViewById(R.id.addbar_button);
+        addBtn.setOnClickListener(this);
+        viewContainer.setVisibility(View.VISIBLE);
+        viewContainer.setAlpha(1);
+        viewContainer.animate();
+
+
+    }
+
+    public void showEditBar(final View viewContainer) {
+        editBtn = (Button) viewContainer.findViewById(R.id.editbar_button);
+        editBtn.setOnClickListener(this);
+        dellBtn = (Button) viewContainer.findViewById(R.id.dellbar_button);
+        dellBtn.setOnClickListener(this);
+        viewContainer.setVisibility(View.VISIBLE);
+        viewContainer.setAlpha(1);
+        viewContainer.animate();
+
+
+    }
+
+    public void parentsSetIsSelectedOnFalse(){
+        for (int i = 0 ; i < groups.size(); i ++) {
+            if (groups.get(i).getTransaction().isSelected()) {
+                groups.get(i).getTransaction().setIsSelected(false);
+            }
+        }
+    }
+    public void childrenSetIsSelectedOnFalse(){
+        for (int i = 0 ; i < groups.size(); i ++){
+            for (int j = 0; j <groups.get(i).getChildren().size(); j ++){
+                if (groups.get(i).getChildren().get(j).isSelected()){
+                    groups.get(i).getChildren().get(j).setIsSelected(false);
+                }
+            }
+        }
     }
 
 

@@ -1,20 +1,20 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="40dp"
-    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="1"
     android:paddingLeft="40dp"
     tools:context=".MainActivity" >
 
 
-
+    <TableRow>
     <TextView
         android:id="@+id/textDate"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:gravity="center_vertical"
+
         android:text="@string/hello_world"
         android:textSize="20sp"
         >
@@ -25,27 +25,31 @@
         android:layout_height="match_parent"
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:gravity="center_vertical"
+        android:layout_marginLeft="40dp"
         android:text="@string/hello_world"
         android:textSize="20sp"
+
         >
     </TextView>
     <TextView
         android:id="@+id/textValue"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginRight="15dp"
+
+
         android:paddingTop="15dp"
         android:paddingBottom="15dp"
-        android:gravity="center_vertical"
+
         android:text="@string/hello_world"
         android:textSize="20sp"
         >
     </TextView>
+    </TableRow>
 
 
 
 
 
 
-</LinearLayout>
+</TableLayout>
