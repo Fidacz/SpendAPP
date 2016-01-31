@@ -94,8 +94,8 @@ public class TransactionXMLParser {
             //TODO saving xml
             xmlSerializer.setOutput(writer);
             xmlSerializer.startDocument("UTF-8", true);
-
-
+            xmlSerializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+            xmlSerializer.startTag("", "Export");
 
             for (int i = 0 ; transactions.size() != i; i++ ) {
                 Transaction transaction = transactions.get(i);
@@ -129,7 +129,7 @@ public class TransactionXMLParser {
 
 
             }
-
+            xmlSerializer.endTag("", "Export");
 
             xmlSerializer.endDocument();
 

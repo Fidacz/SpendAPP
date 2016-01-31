@@ -2,6 +2,7 @@ package com.example.filip.spendapp.activity;
 
 import android.app.ListActivity;
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.SparseArray;
@@ -17,6 +18,7 @@ import android.widget.ListView;
 import com.example.filip.spendapp.R;
 import com.example.filip.spendapp.SQLHelper;
 import com.example.filip.spendapp.TransactionComparator;
+import com.example.filip.spendapp.TransactionXMLParser;
 import com.example.filip.spendapp.adapter.CategoryAdapter;
 import com.example.filip.spendapp.adapter.CategoryGroup;
 import com.example.filip.spendapp.adapter.TransactioGroup;
@@ -24,8 +26,14 @@ import com.example.filip.spendapp.adapter.TransactionAdapter;
 import com.example.filip.spendapp.data.Category;
 import com.example.filip.spendapp.data.Transaction;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
 public class TransactionActivity  extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemLongClickListener   {
 
@@ -120,6 +128,66 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
             this.startActivity(intent);
             return true;
 
+        }else if (id == R.id.action_export){
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            int year = cal.get(Calendar.YEAR);
+            int month = cal.get(Calendar.MONTH) +1;
+            int day = cal.get(Calendar.DAY_OF_MONTH);
+            int hour = cal.get(Calendar.HOUR_OF_DAY);
+            int min =  cal.get(Calendar.MINUTE);
+            int sec = cal.get(Calendar.SECOND);
+
+
+            SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
+
+            ArrayList<Transaction> transactions;
+            transactions= db.getNotExportedTransactions();
+            //TODO dodelat export
+            Collections.sort(transactions, new TransactionComparator());
+            db.close();
+            int expoYear = 0;
+            int expoMont = 0;
+
+            for (int i = 0; i < transactions.size(); i ++){
+
+                if (transactions.get(i).getMonth() != month || transactions.get(i).getYear() != year){
+                    if (transactions.get(i).getMonth() != expoMont || transactions.get(i).getYear() != expoYear){
+                        expoYear = transactions.get(i).getYear();
+                        expoMont = transactions.get(i).getMonth();
+                        ArrayList<Transaction> exportTransactions;
+                        exportTransactions = db.getMonthTransaction(expoMont, expoYear);
+                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "spendapp"+month+1+"-"+year+".xml");
+
+                        try {
+                            file.createNewFile();
+                            FileOutputStream fileos = new FileOutputStream(file);
+                            OutputStreamWriter osw = new OutputStreamWriter(fileos);
+                            // Write the string to the file
+                            osw.write(TransactionXMLParser.creteXML(exportTransactions));
+                            // save and close
+                            osw.flush();
+                            osw.close();
+                            for (int k = 0; k < exportTransactions.size(); i++){
+                                exportTransactions.get(k).setIsTrasactionExportedToXML(1);
+                                db.updateTransaction(exportTransactions.get(k));
+                            }
+
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                }
+            }
+
+            db.close();
+
+
+
+            return true;
         }
 
         return super.onOptionsItemSelected(item);

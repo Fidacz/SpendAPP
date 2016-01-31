@@ -11,6 +11,7 @@ import com.example.filip.spendapp.data.Category;
 import com.example.filip.spendapp.data.Transaction;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -30,7 +31,10 @@ public class SQLHelper extends SQLiteOpenHelper{
     protected static final String ID_TRANSACTION = "ID";
     //todo prejmenovat
     protected static final String VALUE = "Value";
-    protected static final String DATE = "Date";
+    protected static final String YEAR = "Year";
+    protected static final String MONTH = "Month";
+    protected static final String DAY = "Day";
+    protected static final String TIME = "Time";
     protected static final String COMENT = "Coment";
     protected static final String CATEGORY = "Category";
     protected static final String TYPE = "Type";
@@ -52,11 +56,12 @@ public class SQLHelper extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         // Vytvoreni tabulky
 
-        db.execSQL("CREATE TABLE " + TB_TRANSACTION + "(ID INTEGER PRIMARY KEY, Value REAL NOT NULL, Date TEXT NOT NULL, Coment TEXT, Category TEXT NOT NULL, Type INTEGER NOT NULL, isTrasactionExportedToXML INTEGER)"); //// TODO: 17. 11. 2015 opravit
+        db.execSQL("CREATE TABLE " + TB_TRANSACTION + "(ID INTEGER PRIMARY KEY, Value REAL NOT NULL, Day INTEGER NOT NULL, Month INTEGER NOT NULL, Year INTEGER NOT NULL, Time STRING NOT NULL, Coment TEXT, Category TEXT NOT NULL, Type INTEGER NOT NULL, isTrasactionExportedToXML INTEGER)"); //// TODO: 17. 11. 2015 opravit
         db.execSQL("CREATE TABLE " + TB_CATEGORY + "(" + ID_CATEGORY + " INTEGER PRIMARY KEY, " + NAME_CATEGORY + " TEXT NOT NULL UNIQUE, " + MASTER_CATEGORY + " TEXT)");
 
         //defaultni kategorie
 
+        //TODO nefunguje to
         ContentValues values = new ContentValues();
         values.put(ID_CATEGORY,0);
         values.put(NAME_CATEGORY,"Jídlo");
@@ -82,7 +87,10 @@ public class SQLHelper extends SQLiteOpenHelper{
         ContentValues values = new ContentValues();
         values.put(ID_TRANSACTION,transaction.getId());
         values.put(VALUE,transaction.getValue());
-        values.put(DATE,transaction.getDate());
+        values.put(DAY,transaction.getDay());
+        values.put(MONTH,transaction.getMonth());
+        values.put(YEAR,transaction.getYear());
+        values.put(TIME,transaction.getTime());
         values.put(CATEGORY,transaction.getCategory());
         values.put(COMENT,transaction.getComment());
         values.put(TYPE,transaction.getType());
@@ -105,18 +113,18 @@ public class SQLHelper extends SQLiteOpenHelper{
 
     public Transaction getTransaction (int ID){
         SQLiteDatabase db = this.getWritableDatabase();
-        Transaction transaction = new Transaction();
+
 
         Cursor cursor = db.rawQuery("SELECT * FROM" + TB_TRANSACTION + "WHERE ID=" + ID, null);
 
-        transaction.setId(Integer.valueOf(cursor.getString(0)));
-        transaction.setValue(Double.valueOf(cursor.getString(1)));
-        transaction.setDate(cursor.getString(2));
-        transaction.setComent(cursor.getString(3));
-        transaction.setCategory(cursor.getString(4));
-        transaction.setType(Integer.valueOf(cursor.getString(5)));
-        transaction.setIsTrasactionExportedToXML(Integer.valueOf(cursor.getString(6)));
-
+        int id = cursor.getInt(0);
+        double value = cursor.getDouble(1);
+        String date = cursor.getString(5)+" "+ cursor.getString(2) +"."+ cursor.getString(3)+ "." + cursor.getString(4);
+        String coment = cursor.getString(6);
+        String category = cursor.getString(7);
+        int type = cursor.getInt(8);
+        int isTrasactionExportedToXML = cursor.getInt(9);
+        Transaction transaction = new Transaction(id, value, date, coment, category, type, isTrasactionExportedToXML);
         db.close();
         return transaction;
     }
@@ -131,14 +139,14 @@ public class SQLHelper extends SQLiteOpenHelper{
 
         if (cursor.moveToFirst()) {
             do {
-                Transaction transaction = new Transaction();
-                transaction.setId(Integer.valueOf(cursor.getString(0)));
-                transaction.setValue(Double.valueOf(cursor.getString(1)));
-                transaction.setDate(cursor.getString(2));
-                transaction.setComent(cursor.getString(3));
-                transaction.setCategory(cursor.getString(4));
-                transaction.setType(Integer.valueOf(cursor.getString(5)));
-                transaction.setIsTrasactionExportedToXML(Integer.valueOf(cursor.getString(6)));
+                int id = cursor.getInt(0);
+                double value = cursor.getDouble(1);
+                String date = cursor.getString(5)+" "+ cursor.getString(2) +"."+ cursor.getString(3)+ "." + cursor.getString(4);
+                String coment = cursor.getString(6);
+                String category = cursor.getString(7);
+                int type = cursor.getInt(8);
+                int isTrasactionExportedToXML = cursor.getInt(9);
+                Transaction transaction = new Transaction(id, value, date, coment, category, type, isTrasactionExportedToXML);
                 transactions.add(transaction);
             } while (cursor.moveToNext());
         }
@@ -156,14 +164,14 @@ public class SQLHelper extends SQLiteOpenHelper{
 
         if (cursor.moveToFirst()) {
             do {
-                Transaction transaction = new Transaction();
-                transaction.setId(Integer.valueOf(cursor.getString(0)));
-                transaction.setValue(Double.valueOf(cursor.getString(1)));
-                transaction.setDate(cursor.getString(2));
-                transaction.setComent(cursor.getString(3));
-                transaction.setCategory(cursor.getString(4));
-                transaction.setType(Integer.valueOf(cursor.getString(5)));
-                transaction.setIsTrasactionExportedToXML(Integer.valueOf(cursor.getString(6)));
+                int id = cursor.getInt(0);
+                double value = cursor.getDouble(1);
+                String date = cursor.getString(5)+" "+ cursor.getString(2) +"."+ cursor.getString(3)+ "." + cursor.getString(4);
+                String coment = cursor.getString(6);
+                String category = cursor.getString(7);
+                int type = cursor.getInt(8);
+                int isTrasactionExportedToXML = cursor.getInt(9);
+                Transaction transaction = new Transaction(id, value, date, coment, category, type, isTrasactionExportedToXML);
                 transactions.add(transaction);
             } while (cursor.moveToNext());
         }
@@ -172,11 +180,38 @@ public class SQLHelper extends SQLiteOpenHelper{
         return transactions;
     }
 
+    public ArrayList<Transaction> getMonthTransaction(int month, int year){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<Transaction> transactions = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_TRANSACTION + " WHERE " +MONTH + " =" + month+" AND "+YEAR+" = "+year , null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(0);
+                double value = cursor.getDouble(1);
+                String date = cursor.getString(5)+" "+ cursor.getString(2) +"."+ cursor.getString(3)+ "." + cursor.getString(4);
+                String coment = cursor.getString(6);
+                String category = cursor.getString(7);
+                int type = cursor.getInt(8);
+                int isTrasactionExportedToXML = cursor.getInt(9);
+                Transaction transaction = new Transaction(id, value, date, coment, category, type, isTrasactionExportedToXML);
+                transactions.add(transaction);
+            } while (cursor.moveToNext());
+        }
+
+        db.close();
+        return transactions;
+    }
+
+
     public void updateTransaction(Transaction transaction){
         SQLiteDatabase db = this.getWritableDatabase();
 
+
+
         db.execSQL("UPDATE " + TB_TRANSACTION +
-                " SET "+ VALUE+"="+transaction.getValue()+" "+ DATE+"="+transaction.getDate()+" "+ COMENT+"="+transaction.getComment()+" "+ CATEGORY+"="+transaction.getCategory()+" "+ IS_TRANSACTION_EXPORTED_TO_XML+"="+transaction.getIsTrasactionExportedToXML()+
+                " SET "+ VALUE+"="+transaction.getValue()+", "+ DAY+"="+transaction.getDay()+", "+ MONTH+"="+transaction.getMonth()+", "+ YEAR+"="+transaction.getYear()+", "+ TIME+"="+transaction.getTime()+", "+ COMENT+"="+transaction.getComment()+", "+ CATEGORY+"="+transaction.getCategory()+", "+ IS_TRANSACTION_EXPORTED_TO_XML+"="+transaction.getIsTrasactionExportedToXML()+
                 " WHERE ID=" + transaction.getId());
 
         db.close();
@@ -212,6 +247,8 @@ public class SQLHelper extends SQLiteOpenHelper{
         return 0;
 
     }
+
+
 
 
 

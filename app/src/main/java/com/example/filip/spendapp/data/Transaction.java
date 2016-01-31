@@ -20,6 +20,15 @@ public class Transaction {
     private int isTrasactionExportedToXML;
     private boolean isSelected;
 
+
+    //datum
+    private int year;
+    private int month;
+    private int day;
+    private String time;
+
+
+
     public Transaction() {
 
     }
@@ -33,12 +42,34 @@ public class Transaction {
         this.type = type;
         this.isTrasactionExportedToXML = isTrasactionExportedToXML;
 
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        this.year = cal.get(Calendar.YEAR);
+        this.month = cal.get(Calendar.MONTH) +1;
+        this.day = cal.get(Calendar.DAY_OF_MONTH);
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
+        int min =  cal.get(Calendar.MINUTE);
+        this. time = hour+":"+min;
+
     }
     public Transaction(int id, double value, String date, String comment, String category, int type, int isTrasactionExportedToXML) {
         this.id = id;
         this.value = value;
-        DateParser dateParser = new DateParser();
-        this.date = dateParser.StringToDate(date);
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm dd.MM.yyyy");
+        try {
+            this.date = sdf.parse(date);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            this.year = cal.get(Calendar.YEAR);
+            this.month = cal.get(Calendar.MONTH)+1;
+            this.day = cal.get(Calendar.DAY_OF_MONTH);
+            int hour = cal.get(Calendar.HOUR_OF_DAY);
+            int min =  cal.get(Calendar.MINUTE);
+            this. time = hour+":"+min;
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         this.comment = comment;
         this.category = category;
         this.type = type;
@@ -126,4 +157,43 @@ public class Transaction {
     public void setIsSelected(boolean isSelected) {
         this.isSelected = isSelected;
     }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public void setYear(int year) {
+        this.year = year;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month = month;
+    }
+
+    public int getDay() {
+        return day;
+    }
+
+    public void setDay(int day) {
+        this.day = day;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
 }
+
+
+
