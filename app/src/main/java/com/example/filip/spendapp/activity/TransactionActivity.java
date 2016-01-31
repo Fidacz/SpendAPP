@@ -157,7 +157,7 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
                         expoMont = transactions.get(i).getMonth();
                         ArrayList<Transaction> exportTransactions;
                         exportTransactions = db.getMonthTransaction(expoMont, expoYear);
-                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "spendapp"+month+1+"-"+year+".xml");
+                        File file = new File(Environment.getExternalStorageDirectory() + File.separator + "spendapp"+expoMont+"-"+expoYear+".xml");
 
                         try {
                             file.createNewFile();
@@ -168,7 +168,7 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
                             // save and close
                             osw.flush();
                             osw.close();
-                            for (int k = 0; k < exportTransactions.size(); i++){
+                            for (int k = 0; k < exportTransactions.size(); k++){
                                 exportTransactions.get(k).setIsTrasactionExportedToXML(1);
                                 db.updateTransaction(exportTransactions.get(k));
                             }

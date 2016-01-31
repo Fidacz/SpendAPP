@@ -14,7 +14,7 @@ public class Transaction {
     private int id;
     private double value;
     private Date date;
-    private String comment;
+    private String comment = null;
     private String category;
     private int type; //type 0 is income, 1 is cost
     private int isTrasactionExportedToXML;
@@ -59,7 +59,7 @@ public class Transaction {
         try {
             this.date = sdf.parse(date);
             Calendar cal = Calendar.getInstance();
-            cal.setTime(new Date());
+            cal.setTime(this.date);
             this.year = cal.get(Calendar.YEAR);
             this.month = cal.get(Calendar.MONTH)+1;
             this.day = cal.get(Calendar.DAY_OF_MONTH);

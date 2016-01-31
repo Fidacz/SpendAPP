@@ -211,7 +211,7 @@ public class SQLHelper extends SQLiteOpenHelper{
 
 
         db.execSQL("UPDATE " + TB_TRANSACTION +
-                " SET "+ VALUE+"="+transaction.getValue()+", "+ DAY+"="+transaction.getDay()+", "+ MONTH+"="+transaction.getMonth()+", "+ YEAR+"="+transaction.getYear()+", "+ TIME+"="+transaction.getTime()+", "+ COMENT+"="+transaction.getComment()+", "+ CATEGORY+"="+transaction.getCategory()+", "+ IS_TRANSACTION_EXPORTED_TO_XML+"="+transaction.getIsTrasactionExportedToXML()+
+                " SET "+ VALUE+"="+transaction.getValue()+", "+ DAY+"="+transaction.getDay()+", "+ MONTH+"="+transaction.getMonth()+", "+ YEAR+"="+transaction.getYear()+", "+ TIME+"='"+transaction.getTime()+"', "+ COMENT+"='"+transaction.getComment()+"', "+ CATEGORY+"='"+transaction.getCategory()+"', "+ IS_TRANSACTION_EXPORTED_TO_XML+"="+transaction.getIsTrasactionExportedToXML()+
                 " WHERE ID=" + transaction.getId());
 
         db.close();

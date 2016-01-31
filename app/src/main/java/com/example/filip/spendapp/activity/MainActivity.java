@@ -1,5 +1,8 @@
 package com.example.filip.spendapp.activity;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -10,11 +13,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.TimePicker;
 
 import com.example.filip.spendapp.DateParser;
 import com.example.filip.spendapp.R;
@@ -28,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -53,8 +59,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Button save;
 
 
-    private Date date;
-    private ArrayList<Transaction> transactionList = new ArrayList<>();
+
+    private int year;
+    private int month;
+    private int day;
+    private int hour;
+    private int min;
+
 
 
     @Override
@@ -90,9 +101,14 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         category.setAdapter(dataAdapter);
 
         dateBTN = (Button) findViewById(R.id.date);
-        date = new Date();
-        DateParser dateParser = new DateParser();
-        dateBTN.setText(dateParser.dateToString(date));
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        year = cal.get(Calendar.YEAR);
+        month = cal.get(Calendar.MONTH) +1;
+        day = cal.get(Calendar.DAY_OF_MONTH);
+        hour = cal.get(Calendar.HOUR_OF_DAY);
+        min =  cal.get(Calendar.MINUTE);
+        dateBTN.setText(hour+":"+min+" "+day+"."+month+"."+year);
         dateBTN.setOnClickListener(this);
         save = (Button) findViewById(R.id.save);
         save.setOnClickListener(this);
@@ -119,69 +135,72 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         //TODO docelat prepinani mezi aktivitama
         if (id == R.id.action_spend) {
 
-        }else if (id == R.id.action_trasaction){
+        } else if (id == R.id.action_trasaction) {
 
-            Intent intent = new Intent(this,TransactionActivity.class);
+            Intent intent = new Intent(this, TransactionActivity.class);
             this.startActivity(intent);
             return true;
-        }else if (id == R.id.action_category){
-            Intent intent = new Intent(this,CategoryActivity.class);
+        } else if (id == R.id.action_category) {
+            Intent intent = new Intent(this, CategoryActivity.class);
             this.startActivity(intent);
             return true;
 
-        }else if (id == R.id.action_settings){
-            Intent intent = new Intent(this,SettingsActivity.class);
+        } else if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
             this.startActivity(intent);
             return true;
-        }else if (id == R.id.action_export){
+        } else if (id == R.id.action_export) {
 
-            //testovaci export do xml  Environment.getExternalStorageDirectory() + File.separator
-
-            String state = Environment.getExternalStorageState();
-            if (Environment.MEDIA_MOUNTED.equals(state )) {
-
-
-                File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath()+ File.separator + "spendapp2.xml");
-
-
-                try {
-                    file.createNewFile();
-                    FileOutputStream fileos = new FileOutputStream(file);
-                    OutputStreamWriter osw = new OutputStreamWriter(fileos);
-                    // Write the string to the file
-                    SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
-                    ArrayList<Transaction> transactionList = new ArrayList<>();
-                    transactionList = db.getNotExportedTransactions();
-                    osw.write(TransactionXMLParser.creteXML(transactionList));
-                    for (int i=0; i < transactionList.size() ; i ++ ){
-                        db.updateTransactionExportedParametr(transactionList.get(i).getId());
-                    }
-
-                    db.close();
-                    // save and close
-                    osw.flush();
-                    osw.close();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-
-
-
-            return true;
 
         }
 
+
+
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected Dialog onCreateDialog(int ID ){
+        //0 dialog na vyber datumu 1 dialog na vyber casu
+        if (ID == 0){
+
+            return new DatePickerDialog(this,dpLisener,year, month -1,day);
+        }else if (ID == 1){
+
+            return new TimePickerDialog(this,tpLisener,hour,min,true);
+        }
+
+        return null;
+    }
+
+    private TimePickerDialog.OnTimeSetListener tpLisener = new TimePickerDialog.OnTimeSetListener() {
+        @Override
+        public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+            hour = hourOfDay;
+            min = minute;
+            dateBTN.setText(hour+":"+min+" "+day+"."+month+"."+year);
+            //TODO dodelat vraceni na vyber hodin
+        }
+    };
+
+    private DatePickerDialog.OnDateSetListener dpLisener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int yearPick, int monthOfYear, int dayOfMonth) {
+           year = yearPick;
+           month = monthOfYear +1;
+            day = dayOfMonth ;
+            dateBTN.setText(hour+":"+min+" "+day+"."+month+"."+year);
+            showDialog(1);
+
+        }
+    };
 
     @Override
     public void onClick(View v) {
 
         switch (v.getId()){
             case R.id.date:
+                showDialog(0);
                 break;
 
             case R.id.save:
@@ -203,29 +222,13 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                     if (valueSwitch.isChecked()){
                        typeOfTransacion = 1;  // pokud je to vydaj hodnota se udela zaporna
                     }
-                    Transaction transakce = new Transaction(db.getMaxIDTransaction()+ 1, value, date, textKOmentare,category.getSelectedItem().toString(),typeOfTransacion,0 );
-                    transactionList.add(transakce);
+                String osz = dateBTN.getText().toString();
+                    Transaction transakce = new Transaction(db.getMaxIDTransaction()+ 1, value, dateBTN.getText().toString() , textKOmentare,category.getSelectedItem().toString(),typeOfTransacion,0 );
+
 
                     db.addTransaction(transakce);
                     db.close();
 
-                    /** docastne resene ukladani xml
-                    File file = new File(Environment.getExternalStorageDirectory() + File.separator + "spendapp.xml");
-
-                    try {
-                        file.createNewFile();
-                        FileOutputStream fileos = new FileOutputStream(file);
-                        OutputStreamWriter osw = new OutputStreamWriter(fileos);
-                        // Write the string to the file
-                        osw.write(TransactionXMLParser.creteXML(transactionList));
-                        // save and close
-                        osw.flush();
-                        osw.close();
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    **/
 
 
                 this.finish();
