@@ -61,13 +61,38 @@ public class SQLHelper extends SQLiteOpenHelper{
 
         //defaultni kategorie
 
-        //TODO nefunguje to
+        //predpripravene kategorie
         ContentValues values = new ContentValues();
         values.put(ID_CATEGORY,0);
         values.put(NAME_CATEGORY,"Jídlo");
-        values.put(MASTER_CATEGORY,"");
-
         db.insert(TB_CATEGORY, null, values);
+        values=null;
+
+        values = new ContentValues();
+        values.put(ID_CATEGORY, 1);
+        values.put(NAME_CATEGORY,"Příjem");
+        db.insert(TB_CATEGORY, null, values);
+        values=null;
+
+        values = new ContentValues();
+        values.put(ID_CATEGORY, 2);
+        values.put(NAME_CATEGORY,"Práce");
+        values.put(MASTER_CATEGORY,"Příjem");
+        db.insert(TB_CATEGORY, null, values);
+        values=null;
+
+        values = new ContentValues();
+        values.put(ID_CATEGORY,3);
+        values.put(NAME_CATEGORY,"Práce");
+        values.put(MASTER_CATEGORY,"Ostatní");
+        db.insert(TB_CATEGORY, null, values);
+        values=null;
+
+        values = new ContentValues();
+        values.put(ID_CATEGORY,4);
+        values.put(NAME_CATEGORY,"Doprava");
+        db.insert(TB_CATEGORY, null, values);
+        values=null;
 
         // db.close();
 
@@ -90,7 +115,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         values.put(DAY,transaction.getDay());
         values.put(MONTH,transaction.getMonth());
         values.put(YEAR,transaction.getYear());
-        values.put(TIME,transaction.getTime());
+        values.put(TIME,transaction.getHour()+":"+transaction.getMin());
         values.put(CATEGORY,transaction.getCategory());
         values.put(COMENT,transaction.getComment());
         values.put(TYPE,transaction.getType());
@@ -115,7 +140,8 @@ public class SQLHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
 
 
-        Cursor cursor = db.rawQuery("SELECT * FROM" + TB_TRANSACTION + "WHERE ID=" + ID, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_TRANSACTION + " WHERE ID=" + ID, null);
+        cursor.moveToFirst();
 
         int id = cursor.getInt(0);
         double value = cursor.getDouble(1);
@@ -211,7 +237,7 @@ public class SQLHelper extends SQLiteOpenHelper{
 
 
         db.execSQL("UPDATE " + TB_TRANSACTION +
-                " SET "+ VALUE+"="+transaction.getValue()+", "+ DAY+"="+transaction.getDay()+", "+ MONTH+"="+transaction.getMonth()+", "+ YEAR+"="+transaction.getYear()+", "+ TIME+"='"+transaction.getTime()+"', "+ COMENT+"='"+transaction.getComment()+"', "+ CATEGORY+"='"+transaction.getCategory()+"', "+ IS_TRANSACTION_EXPORTED_TO_XML+"="+transaction.getIsTrasactionExportedToXML()+
+                " SET "+ VALUE+"="+transaction.getValue()+", "+ DAY+"="+transaction.getDay()+", "+ MONTH+"="+transaction.getMonth()+", "+ YEAR+"="+transaction.getYear()+", "+ TIME+"='"+transaction.getHour()+":"+transaction.getMin()+"', "+ COMENT+"='"+transaction.getComment()+"', "+ CATEGORY+"='"+transaction.getCategory()+"', "+TYPE+"='"+transaction.getType()+"', "+ IS_TRANSACTION_EXPORTED_TO_XML+"="+transaction.getIsTrasactionExportedToXML()+
                 " WHERE ID=" + transaction.getId());
 
         db.close();

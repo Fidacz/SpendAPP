@@ -91,7 +91,7 @@ public class TransactionXMLParser {
         StringWriter writer = new StringWriter();
 
         try {
-            //TODO saving xml
+
             xmlSerializer.setOutput(writer);
             xmlSerializer.startDocument("UTF-8", true);
             xmlSerializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);

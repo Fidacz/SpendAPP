@@ -26,19 +26,16 @@ import com.example.filip.spendapp.R;
 import com.example.filip.spendapp.SQLHelper;
 import com.example.filip.spendapp.data.Category;
 import com.example.filip.spendapp.data.Transaction;
-import com.example.filip.spendapp.TransactionXMLParser;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 
 public class MainActivity extends ActionBarActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
-
+    //TODO dodelat kdyz dojde ke zmene data o mesic 
 
     private TextView titleValue;
     private TextView titleValueSwitch ;
@@ -66,6 +63,9 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private int hour;
     private int min;
 
+    private boolean isEdit = false;
+    private Transaction transaction = new Transaction();
+    private ArrayList<Category> categories = new ArrayList<>();
 
 
     @Override
@@ -90,29 +90,77 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         category.setOnItemSelectedListener(this);
 
         SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
-        ArrayList<Category> categories = new ArrayList<>();
+        categories = new ArrayList<>();
         categories = db.getcategories();
-        String[] values = new String[categories.size()];
 
-        for (int i = 0; i < categories.size(); i++){
-            values[i] = categories.get(i).getName();
-        }
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, values);
-        category.setAdapter(dataAdapter);
+
 
         dateBTN = (Button) findViewById(R.id.date);
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        year = cal.get(Calendar.YEAR);
-        month = cal.get(Calendar.MONTH) +1;
-        day = cal.get(Calendar.DAY_OF_MONTH);
-        hour = cal.get(Calendar.HOUR_OF_DAY);
-        min =  cal.get(Calendar.MINUTE);
-        dateBTN.setText(hour+":"+min+" "+day+"."+month+"."+year);
         dateBTN.setOnClickListener(this);
         save = (Button) findViewById(R.id.save);
         save.setOnClickListener(this);
+
+
+        Bundle bundle = getIntent().getExtras();
+
+
+        if (bundle != null ){
+            // editace doplneni hodnot
+            isEdit = true;
+            transaction = db.getTransaction(bundle.getInt("id"));
+            valueEditText.setText(String.valueOf(transaction.getValue()));
+            commentEditText.setText(transaction.getComment());
+
+            if (transaction.getType() == 0){
+                valueSwitch.setChecked(false);
+            }else{
+                valueSwitch.setChecked(true);
+            }
+            boolean pom = true; // pomocna promena, kdyz kategorie co je u transakce neniv DB nastavi se na false
+            for (int i = 0; i < categories.size(); i ++){
+                if (categories.get(i).getName().equals(transaction.getCategory())){
+                    category.setSelection(i);
+                    pom = false;
+                }
+            }
+
+               if(pom){
+                   Category cat = new Category();
+                   cat.setName(transaction.getCategory());
+                   categories.add(cat);
+                   prepareCategorie();
+                   category.setSelection(categories.size()-1);
+               }else {
+                   prepareCategorie();
+               }
+
+             year = transaction.getYear();
+             month = transaction.getMonth() ;
+             day = transaction.getDay();
+             hour = transaction.getHour();
+            min = transaction.getMin();
+            dateBTN.setText(hour + ":" + min + " " + day + "." + month + "." + year);
+
+
+        }else {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            year = cal.get(Calendar.YEAR);
+            month = cal.get(Calendar.MONTH) +1;
+            day = cal.get(Calendar.DAY_OF_MONTH);
+            hour = cal.get(Calendar.HOUR_OF_DAY);
+            min =  cal.get(Calendar.MINUTE);
+            dateBTN.setText(hour + ":" + min + " " + day + "." + month + "." + year);
+            prepareCategorie();
+
+
+
+        }
+        db.close();
+
     }
+
+
 
 
     @Override
@@ -205,31 +253,50 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
             case R.id.save:
 
+                SQLHelper db = new SQLHelper(this, "spendApp", null, 1);
 
-                String stringValue = String.valueOf(valueEditText.getText());
+                if (isEdit) {
+                    String stringValue = String.valueOf(valueEditText.getText());
+                    if (stringValue.equals("")) {
+                        break; // pokud neni vyplnená catka tak se nic ukladat nebude
+                    }
+                    transaction.setValue(Double.valueOf(stringValue));
+                    transaction.setCategory(category.getSelectedItem().toString());
+                    transaction.setDate(dateBTN.getText().toString());
+                    if (valueSwitch.isChecked()) {
+                        transaction.setType(1);  // pokud je to vydaj hodnota se udela zaporna
+                    }else{
+                        transaction.setType(0);
+                    }
+
+                    transaction.setComent(String.valueOf(commentEditText.getText()));
+                    transaction.setIsTrasactionExportedToXML(0);
+                    db.updateTransaction(transaction);
+
+                }else {
+                    String stringValue = String.valueOf(valueEditText.getText());
 
 
-                if (stringValue.equals("")) {
-                    break; // pokud neni vyplnená catka tak se nic ukladat nebude
-                }
+                    if (stringValue.equals("")) {
+                        break; // pokud neni vyplnená catka tak se nic ukladat nebude
+                    }
                     int typeOfTransacion = 0;
-                    SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
+
 
                     Double value = Double.parseDouble(stringValue);
                     String textKOmentare = String.valueOf(commentEditText.getText());
 
 
-                    if (valueSwitch.isChecked()){
-                       typeOfTransacion = 1;  // pokud je to vydaj hodnota se udela zaporna
+                    if (valueSwitch.isChecked()) {
+                        typeOfTransacion = 1;  // pokud je to vydaj hodnota se udela zaporna
                     }
-                String osz = dateBTN.getText().toString();
-                    Transaction transakce = new Transaction(db.getMaxIDTransaction()+ 1, value, dateBTN.getText().toString() , textKOmentare,category.getSelectedItem().toString(),typeOfTransacion,0 );
+
+                    Transaction transakce = new Transaction(db.getMaxIDTransaction() + 1, value, dateBTN.getText().toString(), textKOmentare, category.getSelectedItem().toString(), typeOfTransacion, 0);
 
 
                     db.addTransaction(transakce);
                     db.close();
-
-
+                }
 
                 this.finish();
                 break;
@@ -244,5 +311,15 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    private void prepareCategorie() {
+        String[] values = new String[categories.size()];
+
+        for (int i = 0; i < categories.size(); i++){
+            values[i] = categories.get(i).getName();
+        }
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, values);
+        category.setAdapter(dataAdapter);
     }
 }

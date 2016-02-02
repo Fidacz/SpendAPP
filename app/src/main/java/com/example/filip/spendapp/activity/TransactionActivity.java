@@ -204,6 +204,9 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
 
             case R.id.editbar_button:
                 //TODO dodelat edit
+                Intent intent2 = new Intent(this,MainActivity.class);
+                intent2.putExtra("id",groups.get(selectedGroupID).getChildren().get(selectedChildID).getId());
+                this.startActivity(intent2);
                 /**
                 Intent intent2 = new Intent(this,AddCategoryActivity.class);
                 if (selectedChildID == -1){

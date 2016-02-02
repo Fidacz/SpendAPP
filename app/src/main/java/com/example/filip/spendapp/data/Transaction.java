@@ -25,8 +25,8 @@ public class Transaction {
     private int year;
     private int month;
     private int day;
-    private String time;
-
+    private int hour;
+    private int min;
 
 
     public Transaction() {
@@ -47,9 +47,9 @@ public class Transaction {
         this.year = cal.get(Calendar.YEAR);
         this.month = cal.get(Calendar.MONTH) +1;
         this.day = cal.get(Calendar.DAY_OF_MONTH);
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
-        int min =  cal.get(Calendar.MINUTE);
-        this. time = hour+":"+min;
+        this.hour = cal.get(Calendar.HOUR_OF_DAY);
+        this.min =  cal.get(Calendar.MINUTE);
+
 
     }
     public Transaction(int id, double value, String date, String comment, String category, int type, int isTrasactionExportedToXML) {
@@ -63,9 +63,9 @@ public class Transaction {
             this.year = cal.get(Calendar.YEAR);
             this.month = cal.get(Calendar.MONTH)+1;
             this.day = cal.get(Calendar.DAY_OF_MONTH);
-            int hour = cal.get(Calendar.HOUR_OF_DAY);
-            int min =  cal.get(Calendar.MINUTE);
-            this. time = hour+":"+min;
+            this.hour = cal.get(Calendar.HOUR_OF_DAY);
+            this.min =  cal.get(Calendar.MINUTE);
+
 
         } catch (ParseException e) {
             e.printStackTrace();
@@ -112,10 +112,22 @@ public class Transaction {
         this.date = date;
     }
     public void setDate(String date) {
-        //zakomentovado z duvody chybne udelane metody getDate
-        DateParser dateParser = new DateParser();
-         this.date = dateParser.StringToDate(date);
 
+        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm dd.MM.yyyy");
+        try {
+            this.date = sdf.parse(date);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(this.date);
+            this.year = cal.get(Calendar.YEAR);
+            this.month = cal.get(Calendar.MONTH)+1;
+            this.day = cal.get(Calendar.DAY_OF_MONTH);
+            this.hour = cal.get(Calendar.HOUR_OF_DAY);
+            this.min =  cal.get(Calendar.MINUTE);
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getComment() {
@@ -158,9 +170,7 @@ public class Transaction {
         this.isSelected = isSelected;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
+
 
     public int getYear() {
         return year;
@@ -186,12 +196,20 @@ public class Transaction {
         this.day = day;
     }
 
-    public String getTime() {
-        return time;
+    public int getHour() {
+        return hour;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setHour(int hour) {
+        this.hour = hour;
+    }
+
+    public int getMin() {
+        return min;
+    }
+
+    public void setMin(int min) {
+        this.min = min;
     }
 }
 
