@@ -12,6 +12,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 
 /**
+ *
  * Created by Filip on 14. 6. 2015.
  */
 public class TransactionXMLParser {
@@ -114,9 +115,15 @@ public class TransactionXMLParser {
                 xmlSerializer.endTag("", "Date");
 
                 xmlSerializer.startTag("", "Category");
-                xmlSerializer.text(transaction.getCategory());
+                xmlSerializer.text(transaction.getCategory().getName());
                 xmlSerializer.endTag("", "Category");
 
+                if (transaction.getCategory().getMasterCategory() != null){
+                    //pokud existuje masterCategory
+                    xmlSerializer.startTag("", "MasterCategory");
+                    xmlSerializer.text(transaction.getCategory().getMasterCategory());
+                    xmlSerializer.endTag("", "MasterCategory");
+                }
                 xmlSerializer.startTag("", "Coment");
                 xmlSerializer.text(transaction.getComment());
                 xmlSerializer.endTag("", "Coment");

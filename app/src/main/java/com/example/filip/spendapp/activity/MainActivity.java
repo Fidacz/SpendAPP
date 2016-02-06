@@ -66,6 +66,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private boolean isEdit = false;
     private Transaction transaction = new Transaction();
     private ArrayList<Category> categories = new ArrayList<>();
+    private int[] categoryID;
 
 
     @Override
@@ -125,8 +126,8 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             }
 
                if(pom){
-                   Category cat = new Category();
-                   cat.setName(transaction.getCategory());
+                   Category cat = transaction.getCategory();
+                   //cat.setName(db.getCategory(transaction.getCategory()).getName());
                    categories.add(cat);
                    prepareCategorie();
                    category.setSelection(categories.size()-1);
@@ -261,7 +262,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         break; // pokud neni vyplnená catka tak se nic ukladat nebude
                     }
                     transaction.setValue(Double.valueOf(stringValue));
-                    transaction.setCategory(category.getSelectedItem().toString());
+                    transaction.setCategory(db.getCategory(categoryID[category.getSelectedItemPosition()]));
                     transaction.setDate(dateBTN.getText().toString());
                     if (valueSwitch.isChecked()) {
                         transaction.setType(1);  // pokud je to vydaj hodnota se udela zaporna
@@ -291,7 +292,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         typeOfTransacion = 1;  // pokud je to vydaj hodnota se udela zaporna
                     }
 
-                    Transaction transakce = new Transaction(db.getMaxIDTransaction() + 1, value, dateBTN.getText().toString(), textKOmentare, category.getSelectedItem().toString(), typeOfTransacion, 0);
+                    Transaction transakce = new Transaction(db.getMaxIDTransaction() + 1, value, dateBTN.getText().toString(), textKOmentare, db.getCategory(categoryID[category.getSelectedItemPosition()]), typeOfTransacion, 0);
 
 
                     db.addTransaction(transakce);
@@ -315,9 +316,11 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     private void prepareCategorie() {
         String[] values = new String[categories.size()];
+        categoryID = new int[categories.size()];;
 
         for (int i = 0; i < categories.size(); i++){
             values[i] = categories.get(i).getName();
+            categoryID[i] = categories.get(i).getId();
         }
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, values);
         category.setAdapter(dataAdapter);

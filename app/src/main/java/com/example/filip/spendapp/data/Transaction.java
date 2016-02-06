@@ -15,7 +15,7 @@ public class Transaction {
     private double value;
     private Date date;
     private String comment = null;
-    private String category;
+    private Category category;
     private int type; //type 0 is income, 1 is cost
     private int isTrasactionExportedToXML;
     private boolean isSelected;
@@ -33,7 +33,7 @@ public class Transaction {
 
     }
 
-    public Transaction(int id, double value, Date date, String comment, String category, int type, int isTrasactionExportedToXML) {
+    public Transaction(int id, double value, Date date, String comment, Category category, int type, int isTrasactionExportedToXML) {
         this.id = id;
         this.value = value;
         this.date = date;
@@ -52,7 +52,7 @@ public class Transaction {
 
 
     }
-    public Transaction(int id, double value, String date, String comment, String category, int type, int isTrasactionExportedToXML) {
+    public Transaction(int id, double value, String date, String comment, Category category, int type, int isTrasactionExportedToXML) {
         this.id = id;
         this.value = value;
         SimpleDateFormat sdf = new SimpleDateFormat("hh:mm dd.MM.yyyy");
@@ -138,11 +138,11 @@ public class Transaction {
         this.comment = comment;
     }
 
-    public String getCategory() {
+    public Category getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(Category category) {
         this.category = category;
     }
 

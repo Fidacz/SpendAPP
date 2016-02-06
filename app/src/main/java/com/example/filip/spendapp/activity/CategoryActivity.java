@@ -27,7 +27,7 @@ import com.example.filip.spendapp.data.Category;
 import com.example.filip.spendapp.data.Transaction;
 
 import java.util.ArrayList;
-
+//TODO dodelat upozorneni pri mazani kategorii ze se smazou i transakce s tou categorii
 public class CategoryActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemLongClickListener {
 
     private ExpandableListView listView;

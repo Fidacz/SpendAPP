@@ -56,7 +56,7 @@ public class SQLHelper extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         // Vytvoreni tabulky
 
-        db.execSQL("CREATE TABLE " + TB_TRANSACTION + "(ID INTEGER PRIMARY KEY, Value REAL NOT NULL, Day INTEGER NOT NULL, Month INTEGER NOT NULL, Year INTEGER NOT NULL, Time STRING NOT NULL, Coment TEXT, Category TEXT NOT NULL, Type INTEGER NOT NULL, isTrasactionExportedToXML INTEGER)"); //// TODO: 17. 11. 2015 opravit
+        db.execSQL("CREATE TABLE " + TB_TRANSACTION + "(ID INTEGER PRIMARY KEY, Value REAL NOT NULL, Day INTEGER NOT NULL, Month INTEGER NOT NULL, Year INTEGER NOT NULL, Time STRING NOT NULL, Coment TEXT, Category INTEGER NOT NULL, Type INTEGER NOT NULL, isTrasactionExportedToXML INTEGER)"); //// TODO: 17. 11. 2015 opravit
         db.execSQL("CREATE TABLE " + TB_CATEGORY + "(" + ID_CATEGORY + " INTEGER PRIMARY KEY, " + NAME_CATEGORY + " TEXT NOT NULL UNIQUE, " + MASTER_CATEGORY + " TEXT)");
 
         //defaultni kategorie
@@ -116,7 +116,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         values.put(MONTH,transaction.getMonth());
         values.put(YEAR,transaction.getYear());
         values.put(TIME,transaction.getHour()+":"+transaction.getMin());
-        values.put(CATEGORY,transaction.getCategory());
+        values.put(CATEGORY,transaction.getCategory().getId());
         values.put(COMENT,transaction.getComment());
         values.put(TYPE,transaction.getType());
         values.put(IS_TRANSACTION_EXPORTED_TO_XML, transaction.getIsTrasactionExportedToXML());
@@ -147,7 +147,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         double value = cursor.getDouble(1);
         String date = cursor.getString(5)+" "+ cursor.getString(2) +"."+ cursor.getString(3)+ "." + cursor.getString(4);
         String coment = cursor.getString(6);
-        String category = cursor.getString(7);
+        Category category = getCategory(cursor.getInt(7));
         int type = cursor.getInt(8);
         int isTrasactionExportedToXML = cursor.getInt(9);
         Transaction transaction = new Transaction(id, value, date, coment, category, type, isTrasactionExportedToXML);
@@ -169,7 +169,7 @@ public class SQLHelper extends SQLiteOpenHelper{
                 double value = cursor.getDouble(1);
                 String date = cursor.getString(5)+" "+ cursor.getString(2) +"."+ cursor.getString(3)+ "." + cursor.getString(4);
                 String coment = cursor.getString(6);
-                String category = cursor.getString(7);
+                Category category = getCategory(cursor.getInt(7));
                 int type = cursor.getInt(8);
                 int isTrasactionExportedToXML = cursor.getInt(9);
                 Transaction transaction = new Transaction(id, value, date, coment, category, type, isTrasactionExportedToXML);
@@ -194,7 +194,7 @@ public class SQLHelper extends SQLiteOpenHelper{
                 double value = cursor.getDouble(1);
                 String date = cursor.getString(5)+" "+ cursor.getString(2) +"."+ cursor.getString(3)+ "." + cursor.getString(4);
                 String coment = cursor.getString(6);
-                String category = cursor.getString(7);
+                Category category = getCategory(cursor.getInt(7));
                 int type = cursor.getInt(8);
                 int isTrasactionExportedToXML = cursor.getInt(9);
                 Transaction transaction = new Transaction(id, value, date, coment, category, type, isTrasactionExportedToXML);
@@ -218,7 +218,7 @@ public class SQLHelper extends SQLiteOpenHelper{
                 double value = cursor.getDouble(1);
                 String date = cursor.getString(5)+" "+ cursor.getString(2) +"."+ cursor.getString(3)+ "." + cursor.getString(4);
                 String coment = cursor.getString(6);
-                String category = cursor.getString(7);
+                Category category = getCategory(cursor.getInt(7));
                 int type = cursor.getInt(8);
                 int isTrasactionExportedToXML = cursor.getInt(9);
                 Transaction transaction = new Transaction(id, value, date, coment, category, type, isTrasactionExportedToXML);

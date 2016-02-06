@@ -13,6 +13,7 @@ import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import com.example.filip.spendapp.R;
+import com.example.filip.spendapp.SQLHelper;
 import com.example.filip.spendapp.data.Category;
 import com.example.filip.spendapp.data.Transaction;
 
@@ -165,8 +166,8 @@ public class TransactionAdapter extends BaseExpandableListAdapter {
 
         date.setText(day);
         //date.setText("datum");
-        category = (TextView) convertView.findViewById(R.id.textCategory);
-        category.setText(children.getCategory());
+        category = (TextView) convertView.findViewById(R.id.textCategory);;
+        category.setText(children.getCategory().getName());
         value = (TextView) convertView.findViewById(R.id.textValue);
 
         if (children.getType() == 1){
