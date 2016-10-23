@@ -1,7 +1,9 @@
 package com.example.filip.spendapp.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -138,26 +140,121 @@ public class CategoryActivity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.dellbar_button:
 
-                SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
+                final SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
                 if (selectedChildID == -1){
                     //je vybran rodic
+                    int categoryID = groups.get(selectedGroupID).category.getId();
+                    final ArrayList<Transaction> transactions = db.getTransactionsByCategory(categoryID);
+
+                    //vyhledani deti
+                    ArrayList<Category> categories = new ArrayList<>();
                     for (int i = 0; i < groups.get(selectedGroupID).children.size(); i++){
-                        db.delteCategory(groups.get(selectedGroupID).children.get(i).getId());
+
+                        categories.add(db.getCategory(groups.get(selectedGroupID).children.get(i).getId()));
+                    }
+
+                    if( transactions.size() == 0 && categories.size() == 0 ){
+                        //nema zadne potomky s transakcema nebo transakce
+                        db.delteCategory(groups.get(selectedGroupID).category.getId());
+                        for (int i = selectedGroupID; i < groups.size(); i ++){
+                            groups.setValueAt(i, groups.get(i + 1));
+                        }
+                        groups.remove(groups.size() - 1);
+
+                    }else {
+                        //ma transakce nebo potomky s transakcema
+
+                        final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which){
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        //chci smazat i transace
+
+                                        for (int i=0; i < transactions.size() ;i++) {
+                                            //mazani transakcí
+                                            db.delteTransaction(transactions.get(i).getId());
+                                        }
+
+
+                                        for (int i = 0; i < groups.get(selectedGroupID).children.size(); i++){
+
+                                            final ArrayList<Transaction> childTransactions = db.getTransactionsByCategory(groups.get(selectedGroupID).children.get(i).getId());
+                                            for (int m=0; m < childTransactions.size() ;m++) {
+                                                //mazani transakcí
+                                                db.delteTransaction(childTransactions.get(m).getId());
+                                            }
+                                            db.delteCategory(groups.get(selectedGroupID).children.get(i).getId());
+
+                                        }
+
+                                        db.delteCategory(groups.get(selectedGroupID).category.getId());
+                                        for (int i = selectedGroupID; i < groups.size(); i ++){
+                                            groups.setValueAt(i, groups.get(i + 1));
+                                        }
+                                        groups.remove(groups.size() - 1);
+                                        adapter.notifyDataSetChanged();
+
+                                        break;
+
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        //Ne nemazat je
+                                        break;
+                                }
+                            }
+                        };
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setMessage("Tato kategorie obsahuje transakce nebo podKategorie chcete vše smazat ?").setPositiveButton("ANO", dialogClickListener)
+                                .setNegativeButton("NE", dialogClickListener).show();
+
 
                     }
 
-                    db.delteCategory(groups.get(selectedGroupID).category.getId());
-                    for (int i = selectedGroupID; i < groups.size(); i ++){
-                      groups.setValueAt(i, groups.get(i + 1));
-                    }
-                    groups.remove(groups.size() - 1);
+
+
 
 
                 }else{
-                    db.delteCategory(groups.get(selectedGroupID).children.get(selectedChildID).getId());
-                    groups.get(selectedGroupID).children.remove(selectedChildID);
-
                     //je vybrano dite
+                    final int childID = groups.get(selectedGroupID).children.get(selectedChildID).getId();
+                    final ArrayList<Transaction> transactions = db.getTransactionsByCategory(childID);
+
+
+                    if (transactions.size() == 0) {
+                        //samzani ditete Z DB pokud nejsou v teto categorii transakce
+                        db.delteCategory(childID);
+                        groups.get(selectedGroupID).children.remove(selectedChildID);
+                    }else {
+                        //categorie obsahuje nejake trsankce dialog zda je smazat taky
+                        final DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which){
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                    //chci smazat i transace
+                                        for (int i=0; i < transactions.size() ;i++) {
+                                            //mazani transakcí
+                                            db.delteTransaction(transactions.get(i).getId());
+                                        }
+                                        db.delteCategory(childID);
+                                        groups.get(selectedGroupID).children.remove(selectedChildID);
+                                        adapter.notifyDataSetChanged();
+                                        break;
+
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        //Ne nemazat je
+                                        break;
+                                }
+                            }
+                        };
+
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setMessage("Tato kategorie obsahuje "+ transactions.size()+" transakcí chceteje smazat ?").setPositiveButton("ANO", dialogClickListener)
+                                .setNegativeButton("NE", dialogClickListener).show();
+
+                    }
+
 
                 }
                 adapter.notifyDataSetChanged();

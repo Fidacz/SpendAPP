@@ -1,5 +1,6 @@
 package com.example.filip.spendapp.activity;
 
+import android.app.DownloadManager;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Environment;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 
+
 import com.example.filip.spendapp.R;
 import com.example.filip.spendapp.SQLHelper;
 import com.example.filip.spendapp.TransactionComparator;
@@ -26,10 +28,19 @@ import com.example.filip.spendapp.adapter.TransactionAdapter;
 import com.example.filip.spendapp.data.Category;
 import com.example.filip.spendapp.data.Transaction;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -139,6 +150,15 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
             int sec = cal.get(Calendar.SECOND);
 
 
+
+
+            // Creating HTTP client
+           // HttpClient httpClient = new DefaultHttpClient();
+
+            // Creating HTTP Post
+            //HttpPost httpPost = new HttpPost("https://script.google.com/macros/s/AKfycbz87AsX7Vhtkv7Q9eth0POyQTW9nOaHU3fK0NuGNwCl/dev?teplota=28.65&svetlo=154");
+
+            /**
             SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
 
             ArrayList<Transaction> transactions;
@@ -186,7 +206,7 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
             db.close();
 
 
-
+            */
             return true;
         }
 

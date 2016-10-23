@@ -56,8 +56,9 @@ public class SQLHelper extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         // Vytvoreni tabulky
 
-        db.execSQL("CREATE TABLE " + TB_TRANSACTION + "(ID INTEGER PRIMARY KEY, Value REAL NOT NULL, Day INTEGER NOT NULL, Month INTEGER NOT NULL, Year INTEGER NOT NULL, Time STRING NOT NULL, Coment TEXT, Category INTEGER NOT NULL, Type INTEGER NOT NULL, isTrasactionExportedToXML INTEGER)"); //// TODO: 17. 11. 2015 opravit
         db.execSQL("CREATE TABLE " + TB_CATEGORY + "(" + ID_CATEGORY + " INTEGER PRIMARY KEY, " + NAME_CATEGORY + " TEXT NOT NULL UNIQUE, " + MASTER_CATEGORY + " TEXT)");
+        db.execSQL("CREATE TABLE " + TB_TRANSACTION + "(ID INTEGER PRIMARY KEY, Value REAL NOT NULL, Day INTEGER NOT NULL, Month INTEGER NOT NULL, Year INTEGER NOT NULL, Time STRING NOT NULL, Coment TEXT,Category INTEGER ,Type INTEGER NOT NULL, isTrasactionExportedToXML INTEGER, FOREIGN KEY(Category) REFERENCES CategoryTab(ID))"); //// TODO: 17. 11. 2015 opravit
+
 
         //defaultni kategorie
 
@@ -205,6 +206,32 @@ public class SQLHelper extends SQLiteOpenHelper{
         db.close();
         return transactions;
     }
+
+    public ArrayList<Transaction> getTransactionsByCategory (int categoryID){
+        //získání transakcí podle categorie
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<Transaction> transactions = new ArrayList<>();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_TRANSACTION + " WHERE " + CATEGORY + "=" + categoryID , null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(0);
+                double value = cursor.getDouble(1);
+                String date = cursor.getString(5)+" "+ cursor.getString(2) +"."+ cursor.getString(3)+ "." + cursor.getString(4);
+                String coment = cursor.getString(6);
+                Category category = getCategory(cursor.getInt(7));
+                int type = cursor.getInt(8);
+                int isTrasactionExportedToXML = cursor.getInt(9);
+                Transaction transaction = new Transaction(id, value, date, coment, category, type, isTrasactionExportedToXML);
+                transactions.add(transaction);
+            } while (cursor.moveToNext());
+        }
+
+        db.close();
+        return transactions;
+    }
+
 
     public ArrayList<Transaction> getMonthTransaction(int month, int year){
         SQLiteDatabase db = this.getWritableDatabase();
