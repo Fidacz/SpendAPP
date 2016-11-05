@@ -173,7 +173,7 @@ public class TransactionAdapter extends BaseExpandableListAdapter {
         if (children.getType() == 1){
             value.setText(String.valueOf("-"+children.getValue()));
             value.setTextColor(Color.RED);
-        }else {
+        }else if (children.getType() == 0){
             value.setText(String.valueOf(children.getValue()));
             value.setTextColor(Color.BLACK);
         }

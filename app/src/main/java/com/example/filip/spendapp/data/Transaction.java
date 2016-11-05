@@ -16,7 +16,7 @@ public class Transaction {
     private Date date;
     private String comment = null;
     private Category category;
-    private int type; //type 0 is income, 1 is cost
+    private int type; //type 0 is income, 1 is cost, 2 sum
     private int isTrasactionExportedToXML;
     private boolean isSelected;
 

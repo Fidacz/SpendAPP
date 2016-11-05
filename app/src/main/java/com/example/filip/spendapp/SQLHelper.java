@@ -264,7 +264,7 @@ public class SQLHelper extends SQLiteOpenHelper{
 
 
         db.execSQL("UPDATE " + TB_TRANSACTION +
-                " SET "+ VALUE+"="+transaction.getValue()+", "+ DAY+"="+transaction.getDay()+", "+ MONTH+"="+transaction.getMonth()+", "+ YEAR+"="+transaction.getYear()+", "+ TIME+"='"+transaction.getHour()+":"+transaction.getMin()+"', "+ COMENT+"='"+transaction.getComment()+"', "+ CATEGORY+"='"+transaction.getCategory()+"', "+TYPE+"='"+transaction.getType()+"', "+ IS_TRANSACTION_EXPORTED_TO_XML+"="+transaction.getIsTrasactionExportedToXML()+
+                " SET "+ VALUE+"="+transaction.getValue()+", "+ DAY+"="+transaction.getDay()+", "+ MONTH+"="+transaction.getMonth()+", "+ YEAR+"="+transaction.getYear()+", "+ TIME+"='"+transaction.getHour()+":"+transaction.getMin()+"', "+ COMENT+"='"+transaction.getComment()+"', "+ CATEGORY+"='"+transaction.getCategory().getId()+"', "+TYPE+"='"+transaction.getType()+"', "+ IS_TRANSACTION_EXPORTED_TO_XML+"="+transaction.getIsTrasactionExportedToXML()+
                 " WHERE ID=" + transaction.getId());
 
         db.close();
@@ -360,7 +360,7 @@ public class SQLHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
         ArrayList<Category> categories = new ArrayList<>();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_CATEGORY + " ORDER BY " + NAME_CATEGORY +" COLLATE NOCASE ", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TB_CATEGORY , null);
 
         if (cursor.moveToFirst()) {
             do {

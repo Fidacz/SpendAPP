@@ -118,22 +118,26 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                 valueSwitch.setChecked(true);
             }
             boolean pom = true; // pomocna promena, kdyz kategorie co je u transakce neniv DB nastavi se na false
-            for (int i = 0; i < categories.size(); i ++){
-                if (categories.get(i).getName().equals(transaction.getCategory())){
-                    category.setSelection(i);
-                    pom = false;
-                }
-            }
 
-               if(pom){
-                   Category cat = transaction.getCategory();
-                   //cat.setName(db.getCategory(transaction.getCategory()).getName());
-                   categories.add(cat);
-                   prepareCategorie();
-                   category.setSelection(categories.size()-1);
-               }else {
-                   prepareCategorie();
-               }
+            int id = transaction.getCategory().getId();
+            prepareCategorie();
+            category.setSelection(id);
+            //for (int i = 0; i < categories.size(); i ++){
+              //  if (categories.get(i).getName().equals(transaction.getCategory())){
+                //    category.setSelection(i);
+                  //  pom = false;
+               // }
+            //}
+
+            //if(pom){
+              //     Category cat = transaction.getCategory();
+                //   //cat.setName(db.getCategory(transaction.getCategory()).getName());
+                  // categories.add(cat);
+                   //prepareCategorie();
+                   //category.setSelection(categories.size()-1);
+               //}else {
+
+               //}
 
              year = transaction.getYear();
              month = transaction.getMonth() ;
@@ -262,6 +266,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         break; // pokud neni vyplnená catka tak se nic ukladat nebude
                     }
                     transaction.setValue(Double.valueOf(stringValue));
+                    int id = category.getSelectedItemPosition();
                     transaction.setCategory(db.getCategory(categoryID[category.getSelectedItemPosition()]));
                     transaction.setDate(dateBTN.getText().toString());
                     if (valueSwitch.isChecked()) {
@@ -292,6 +297,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
                         typeOfTransacion = 1;  // pokud je to vydaj hodnota se udela zaporna
                     }
 
+                    int id = category.getSelectedItemPosition();
                     Transaction transakce = new Transaction(db.getMaxIDTransaction() + 1, value, dateBTN.getText().toString(), textKOmentare, db.getCategory(categoryID[category.getSelectedItemPosition()]), typeOfTransacion, 0);
 
 
