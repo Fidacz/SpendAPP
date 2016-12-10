@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -24,6 +26,8 @@ import android.widget.TimePicker;
 import com.example.filip.spendapp.DateParser;
 import com.example.filip.spendapp.R;
 import com.example.filip.spendapp.SQLHelper;
+import com.example.filip.spendapp.adapter.CategoryAdapter;
+import com.example.filip.spendapp.adapter.CategoryGroup;
 import com.example.filip.spendapp.data.Category;
 import com.example.filip.spendapp.data.Transaction;
 
@@ -51,6 +55,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
     private Switch dateSwitch;
 
     private Spinner category;
+    private SparseArray<CategoryGroup> groups = new SparseArray<CategoryGroup>();;
 
     private Button dateBTN;
     private Button save;
@@ -87,7 +92,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         valueSwitch = (Switch) findViewById(R.id.valueSwitch);
         dateSwitch = (Switch) findViewById(R.id.dateSwitch);
 
+        createData();
         category = (Spinner) findViewById(R.id.category);
+       
+
         category.setOnItemSelectedListener(this);
 
         SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
@@ -330,5 +338,26 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         }
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, values);
         category.setAdapter(dataAdapter);
+    }
+
+    public void createData() {
+        //nastrkani dat z db
+        SQLHelper db = new SQLHelper(this,"spendApp",null ,1);
+
+        ArrayList<Category> masterCategories;
+        masterCategories = db.getMasterCategories();
+
+
+        for (int i = 0; i < masterCategories.size(); i++) {
+            CategoryGroup group = new CategoryGroup(masterCategories.get(i));
+            ArrayList<Category> slavesCategories;
+            slavesCategories = db.getSlaveCategories(masterCategories.get(i).getName());
+            for (int j = 0; j < slavesCategories.size(); j++) {
+                group.children.add(slavesCategories.get(j));
+            }
+            groups.append(i, group);
+
+        }
+
     }
 }
