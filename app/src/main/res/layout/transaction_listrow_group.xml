@@ -10,5 +10,5 @@
     android:paddingBottom="8dp"
     android:text="Test"
     android:textSize="28sp"
-
+    android:background="#cccccc"
     android:textStyle="bold" />

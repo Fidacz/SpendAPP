@@ -293,14 +293,15 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
             idgroup++;
             if(transactions.size() == 1){
                 group.getChildren().add(transactions.get(i));
-                /**
+
+
                 if (transactions.get(i).getType() == 0) {
                     groupCount = groupCount + transactions.get(i).getValue();
                 }else if(transactions.get(i).getType() == 1){
                     groupCount = groupCount - transactions.get(i).getValue();
                 }
-                 */
-               // group.getChildren().add( new Transaction(0, groupCount, new Date(), null, new Category("sum", 0), 2, 2));
+
+                group.getChildren().add( new Transaction(0, groupCount, new Date(), null, new Category("sum", 0), 2, 2));
                 groups.append(idgroup, group);
                 break;
             }
@@ -311,24 +312,24 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
 
                 group.getChildren().add(transactions.get(i));
                 //promena kde se ulozi celkový součet za měsíc
-                /**
+
                 if (transactions.get(i).getType() == 0) {
                     groupCount = groupCount + transactions.get(i).getValue();
                 }else if(transactions.get(i).getType() == 1){
                     groupCount = groupCount - transactions.get(i).getValue();
                 }
-                 */
+
                 while (i < transactions.size()-1 && transactions.get(i).getDateDate().getMonth() == transactions.get(i + 1).getDateDate().getMonth()) {
                     group.getChildren().add(transactions.get(i+1));
 
                     //vytvareni sumy
-                    /**
-                    if (transactions.get(i).getType() == 0) {
+
+                    if (transactions.get(i+1).getType() == 0) {
                         groupCount = groupCount + transactions.get(i+1).getValue();
-                    }else if(transactions.get(i).getType() == 1){
+                    }else if(transactions.get(i+1).getType() == 1){
                         groupCount = groupCount - transactions.get(i+1).getValue();
                     }
-                    */
+
 
                     i++;
 
@@ -336,13 +337,13 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
 
             }else{
                 group.getChildren().add(transactions.get(i));
-                /**
+
                 if (transactions.get(i).getType() == 0) {
                     groupCount = groupCount + transactions.get(i).getValue();
                 }else if(transactions.get(i).getType() == 1){
                     groupCount = groupCount - transactions.get(i).getValue();
                 }
-                 */
+
                 i++;
 
             }
@@ -350,7 +351,7 @@ public class TransactionActivity  extends AppCompatActivity implements View.OnCl
             //for (int j = 0; j < slavesCategories.size(); j++) {
             //    group.children.add(slavesCategories.get(j));
             //}
-            //group.getChildren().add( new Transaction(0, groupCount, new Date(), null, new Category("sum", 0), 2, 2));
+            group.getChildren().add( new Transaction(0, groupCount, new Date(), null, new Category("SUM", 0), 2, 2));
             groups.append(idgroup, group);
 
         }

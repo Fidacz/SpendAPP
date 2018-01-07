@@ -3,6 +3,7 @@ package com.example.filip.spendapp.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.renderscript.Type;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -151,9 +152,15 @@ public class TransactionAdapter extends BaseExpandableListAdapter {
         String day = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
 
 
-        if (convertView == null) {
-            convertView = inflater.inflate(R.layout.transaction_listrow_details, null);
-        }
+
+            if (children.getType() == 2){
+                convertView = inflater.inflate(R.layout.transaction_listrow_sum, null);
+            }else{
+                convertView = inflater.inflate(R.layout.transaction_listrow_details, null);
+                date = (TextView) convertView.findViewById(R.id.textDate);
+            }
+
+
 
         if (children.isSelected()) {
             //zabarveni jestli ze ej vybranej item
@@ -162,21 +169,56 @@ public class TransactionAdapter extends BaseExpandableListAdapter {
             convertView.setBackgroundColor(0x0);
         }
 
-        date = (TextView) convertView.findViewById(R.id.textDate);
 
-        date.setText(day);
-        //date.setText("datum");
-        category = (TextView) convertView.findViewById(R.id.textCategory);;
-        category.setText(children.getCategory().getName());
-        value = (TextView) convertView.findViewById(R.id.textValue);
 
+        //zobrazeni nazvu a rozliseni zda se jedna o sumu nebo normal transakci
+        if (children.getType() == 2){
+
+            //convertView = inflater.inflate(R.layout.transaction_listrow_sum, null);
+
+            category = (TextView) convertView.findViewById(R.id.textCategory);
+            ;
+            category.setText(children.getCategory().getName());
+            value = (TextView) convertView.findViewById(R.id.textValue);
+
+        }else {
+            //convertView = inflater.inflate(R.layout.transaction_listrow_details, null);
+            date.setText(day);
+            //date.setText("datum");
+            category = (TextView) convertView.findViewById(R.id.textCategory);
+            ;
+            category.setText(children.getCategory().getName());
+            value = (TextView) convertView.findViewById(R.id.textValue);
+        }
         if (children.getType() == 1){
+            //0=normal
+            value.setTypeface(null,0);
             value.setText(String.valueOf("-"+children.getValue()));
             value.setTextColor(Color.RED);
         }else if (children.getType() == 0){
+            //0=normal
+            value.setTypeface(null,0);
             value.setText(String.valueOf(children.getValue()));
             value.setTextColor(Color.BLACK);
+
+        }else if (children.getType() == 2) {
+
+            //zjisteni zda celkou soucet je kladny nebo zaporny
+            if (children.getValue()<= 0 ) {
+                //1=blod
+                value.setTypeface(null,1);
+                value.setText(String.valueOf(children.getValue()));
+                value.setTextColor(Color.RED);
+                convertView.setBackgroundColor(0xffe5e5e5);
+            }else{
+                //1=blod
+                value.setTypeface(null,1);
+                value.setText(String.valueOf(children.getValue()));
+                value.setTextColor(Color.BLACK);
+                convertView.setBackgroundColor(0xffe5e5e5);
+            }
         }
+
         /**
         final Category children = (Category)getChild(groupPosition, childPosition);
         TextView text = null;
