@@ -27,18 +27,17 @@
     android:layout_height="wrap_content"
     android:layout_gravity="bottom|center_horizontal"
     android:layout_margin="20dp"
-    android:alpha="100"
-    android:background="#808080"
+    android:alpha="0"
     android:dividerPadding="11dp"
     android:padding="4dp" >
 
 
     <Button
         android:id="@+id/addbar_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
         android:onClick="onClick"
-        android:background="#808080"
+        android:background="@drawable/round_button"
         android:text="Add"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#fff" />
